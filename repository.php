@@ -9,7 +9,7 @@ use olafnorge\borgphp\ListCommand;
 <h2> archives </h2>
 
 <?php
-// list the contents of a repository or an archive 
+// list repository's archives
 $repo = $_GET["location"];
 $listCommand = new ListCommand([
 	$repo,
@@ -20,7 +20,6 @@ $output = $listCommand->mustRun()->getOutput();
 ?>
 <table>
 <tr>
-	<th>id</th>
 	<th>name</th>
 	<th>start</th>
 </tr>
@@ -30,7 +29,6 @@ foreach ($output["archives"] as $archive)
 {
 	?>
 	<tr>
-		<td><?= $archive["id"] ?></td>
 		<td><?= $archive["name"] ?></td>
 		<td><?= $archive["start"] ?></td>
 	</tr>

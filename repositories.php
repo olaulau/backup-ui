@@ -10,22 +10,36 @@ use olafnorge\borgphp\InfoCommand;
 
 <table>
 <tr>
-	<th>id</th>
+	<th>name</th>
 	<th>location</th>
 	<th>size</th>
 </tr>
 
 <?php
-foreach ($conf["repos"] as $repo)
+foreach ($conf["repos"] as $name => $location)
 {
 	$cmd = new InfoCommand([
-		$repo,
+		$location,
 	]);
-	$output = $cmd->mustRun()->getOutput();
-// 	var_dump($output);
+	$cmd->setEnv([
+		"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK" => "yes",
+	]);
+	try
+	{
+		$output = $cmd->mustRun()->getOutput();
+	}
+	catch (Exception $e)
+	{
+		echo "<pre>" . $e->getMessage() . "</pre>";
+		echo "<hr>";
+		$err = $cmd->getErrorOutput();
+		echo "<pre>"; var_dump($err); echo "</pre>";
+		die;
+	}
+// 	var_dump($output); die;
 	?>
 	<tr>
-		<td><?= $output["repository"]["id"] ?></th>
+		<td><?= $name ?></td>
 		<td><a href="./repository.php?location=<?= $output["repository"]["location"] ?>"><?= $output["repository"]["location"] ?></a></td>
 		<td><?= $output["cache"]["stats"]["unique_csize"] ?></td>
 	</tr>
