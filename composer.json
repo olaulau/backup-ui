@@ -1,5 +1,6 @@
 {
     "require": {
-        "olafnorge/borgphp": "^0.1.2"
+        "olafnorge/borgphp": "^0.1.2",
+        "gabrielelana/byte-units": "^0.5.0"
     }
 }

@@ -11,11 +11,26 @@ use olafnorge\borgphp\ListCommand;
 <?php
 // list repository's archives
 $repo = $_GET["location"];
-$listCommand = new ListCommand([
+$cmd = new ListCommand([
 	$repo,
 ]);
-$output = $listCommand->mustRun()->getOutput();
-// var_dump($output);
+
+$cmd->setEnv([
+	"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK" => "yes",
+]);
+try
+{
+	$output = $cmd->mustRun()->getOutput();
+}
+catch (Exception $e)
+{
+	echo "<pre>" . $e->getMessage() . "</pre>";
+	echo "<hr>";
+	$err = $cmd->getErrorOutput();
+	echo "<pre>"; var_dump($err); echo "</pre>";
+	die;
+}
+// 	var_dump($output); die;
 
 ?>
 <table>
@@ -28,9 +43,13 @@ $output = $listCommand->mustRun()->getOutput();
 foreach ($output["archives"] as $archive)
 {
 	?>
+	<?php
+	$dt = new DateTime($archive["start"]);
+	$start =  $dt->format("d/m/Y h:i:s");
+	?>
 	<tr>
 		<td><?= $archive["name"] ?></td>
-		<td><?= $archive["start"] ?></td>
+		<td><?= $start ?></td>
 	</tr>
 	<?php
 }

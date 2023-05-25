@@ -41,7 +41,7 @@ foreach ($conf["repos"] as $name => $location)
 	<tr>
 		<td><?= $name ?></td>
 		<td><a href="./repository.php?location=<?= $output["repository"]["location"] ?>"><?= $output["repository"]["location"] ?></a></td>
-		<td><?= $output["cache"]["stats"]["unique_csize"] ?></td>
+		<td><?= ByteUnits\Binary::bytes($output["cache"]["stats"]["unique_csize"])->format("GiB", " ") ?></td>
 	</tr>
 	<?php
 }
