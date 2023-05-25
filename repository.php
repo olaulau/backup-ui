@@ -45,7 +45,7 @@ foreach ($output["archives"] as $archive)
 	?>
 	<?php
 	$dt = new DateTime($archive["start"]);
-	$start =  $dt->format("d/m/Y h:i:s");
+	$start =  $dt->format("d/m/Y H:i:s");
 	?>
 	<tr>
 		<td><?= $archive["name"] ?></td>

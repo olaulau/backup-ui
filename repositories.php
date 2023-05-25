@@ -28,20 +28,42 @@ foreach ($conf["repos"] as $name => $location)
 	{
 		$output = $cmd->mustRun()->getOutput();
 	}
-	catch (Exception $e)
+	catch (Exception $ex)
 	{
-		echo "<pre>" . $e->getMessage() . "</pre>";
-		echo "<hr>";
-		$err = $cmd->getErrorOutput();
-		echo "<pre>"; var_dump($err); echo "</pre>";
-		die;
+		$errors = $cmd->getErrorOutput();
+		$error_message = $errors[0]["message"];
+		if(str_starts_with($error_message, "Failed to create/acquire the lock "))
+		{
+			$output = "LOCK_FAIL";
+		}
+		else
+		{
+			echo "<pre>" . $ex->getMessage() . "</pre>";
+			echo "<hr>";
+			echo "<pre>"; var_dump($errors); echo "</pre>";
+			die;
+		}
 	}
 // 	var_dump($output); die;
 	?>
 	<tr>
 		<td><?= $name ?></td>
-		<td><a href="./repository.php?location=<?= $output["repository"]["location"] ?>"><?= $output["repository"]["location"] ?></a></td>
-		<td><?= ByteUnits\Binary::bytes($output["cache"]["stats"]["unique_csize"])->format("GiB", " ") ?></td>
+		<?php
+		if($output === "LOCK_FAIL")
+		{
+			?>
+			<td>locked</td>
+			<td>&nbsp;</td>
+			<?php
+		}
+		else
+		{
+			?>
+			<td><a href="./repository.php?location=<?= $output["repository"]["location"] ?>"><?= $output["repository"]["location"] ?></a></td>
+			<td><?= ByteUnits\Binary::bytes($output["cache"]["stats"]["unique_csize"])->format("GiB", " ") ?></td>
+			<?php
+		}
+		?>
 	</tr>
 	<?php
 }
