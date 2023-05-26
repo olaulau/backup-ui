@@ -11,11 +11,11 @@ use olafnorge\borgphp\InfoCommand;
 <table>
 <tr>
 	<th>name</th>
-	<th>location</th>
 	<th>size</th>
 </tr>
 
 <?php
+$error_string = "";
 foreach ($conf["repos"] as $name => $location)
 {
 	$cmd = new InfoCommand([
@@ -38,28 +38,37 @@ foreach ($conf["repos"] as $name => $location)
 		}
 		else
 		{
-			echo "<pre>" . $ex->getMessage() . "</pre>";
-			echo "<hr>";
-			echo "<pre>"; var_dump($errors); echo "</pre>";
-			die;
+			$output = "UNKNOWN_ERROR";
+			$error_string .= "<hr>";
+			$error_string .= "<hr>";
+			$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
+			$error_string .= "<hr>";
+			$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
 		}
 	}
 // 	var_dump($output); die;
 	?>
 	<tr>
-		<td><?= $name ?></td>
+		<td><a href="./repository.php?location=<?= $location ?>"><?= $name ?></a></td>
 		<?php
-		if($output === "LOCK_FAIL")
+		if(!is_array($output))
 		{
+			$display = "";
+			if($output === "LOCK_FAIL")
+			{
+				$display = "locked";
+			}
+			else 
+			{
+				$display = "error";
+			}
 			?>
-			<td>locked</td>
-			<td>&nbsp;</td>
+			<td><?= $display ?></td>
 			<?php
 		}
 		else
 		{
 			?>
-			<td><a href="./repository.php?location=<?= $output["repository"]["location"] ?>"><?= $output["repository"]["location"] ?></a></td>
 			<td><?= ByteUnits\Binary::bytes($output["cache"]["stats"]["unique_csize"])->format("GiB", " ") ?></td>
 			<?php
 		}
@@ -69,3 +78,5 @@ foreach ($conf["repos"] as $name => $location)
 }
 ?>
 </table>
+
+<?= $error_string ?>

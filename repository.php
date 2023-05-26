@@ -3,16 +3,13 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/config.inc.php';
 
 use olafnorge\borgphp\ListCommand;
-?>
 
-<h1> repo infos </h1>
-<h2> archives </h2>
+$location = $_GET["location"];
+$repo_name = array_search($location, $conf["repos"]);
 
-<?php
 // list repository's archives
-$repo = $_GET["location"];
 $cmd = new ListCommand([
-	$repo,
+	$location,
 ]);
 
 $cmd->setEnv([
@@ -33,6 +30,9 @@ catch (Exception $e)
 // 	var_dump($output); die;
 
 ?>
+<h1> <?= $repo_name ?> </h1>
+<h2> archives </h2>
+
 <table>
 <tr>
 	<th>name</th>
