@@ -38,6 +38,17 @@ foreach ($conf["repos"] as $name => $location)
 		}
 		else
 		{
+// 			"PermissionError: [Errno 13] Permission denied: '/home/imp/borg/lock.exclusive'";
+			$error_message = $errors[1]["message"];
+			if
+			(
+				array_search("PermissionError: [Errno 13] Permission denied", $error_message) !== false && 
+				array_search("lock.exclusive", $error_message) !== false
+			)
+			{
+				die("LOCK");
+			}
+			
 			$output = "UNKNOWN_ERROR";
 			$error_string .= "<hr>";
 			$error_string .= "<hr>";
@@ -77,6 +88,11 @@ foreach ($conf["repos"] as $name => $location)
 	<?php
 }
 ?>
+
+<tr>
+	<th>TOTAL</th>
+	<th><?= count($conf["repos"]) ?></th>
+</tr>
 </table>
 
 <?= $error_string ?>

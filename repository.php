@@ -54,4 +54,9 @@ foreach ($output["archives"] as $archive)
 	<?php
 }
 ?>
+
+<tr>
+	<th>TOTAL</th>
+	<th><?= count($output["archives"]) ?></th>
+</tr>
 </table>
