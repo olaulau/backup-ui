@@ -16,6 +16,7 @@ use olafnorge\borgphp\InfoCommand;
 
 <?php
 $error_string = "";
+$total_size = 0;
 foreach ($conf["repos"] as $name => $location)
 {
 	$cmd = new InfoCommand([
@@ -79,6 +80,7 @@ foreach ($conf["repos"] as $name => $location)
 		}
 		else
 		{
+			$total_size += $output["cache"]["stats"]["unique_csize"];
 			?>
 			<td><?= ByteUnits\Binary::bytes($output["cache"]["stats"]["unique_csize"])->format("GiB", " ") ?></td>
 			<?php
@@ -90,7 +92,11 @@ foreach ($conf["repos"] as $name => $location)
 ?>
 
 <tr>
-	<th>TOTAL</th>
+	<th>sum</th>
+	<th><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
+</tr>
+<tr>
+	<th>count</th>
 	<th><?= count($conf["repos"]) ?></th>
 </tr>
 </table>
