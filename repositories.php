@@ -43,8 +43,8 @@ foreach ($conf["repos"] as $name => $location)
 			$error_message = $errors[1]["message"];
 			if
 			(
-				array_search("PermissionError: [Errno 13] Permission denied", $error_message) !== false && 
-				array_search("lock.exclusive", $error_message) !== false
+				strpos($error_message, "PermissionError: [Errno 13] Permission denied") !== false && 
+				strpos($error_message, "lock.exclusive") !== false
 			)
 			{
 				die("LOCK");
