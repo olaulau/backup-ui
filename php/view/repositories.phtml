@@ -1,6 +1,5 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/config.inc.php';
+require __DIR__ . '/../../config.inc.php';
 
 use olafnorge\borgphp\InfoCommand;
 ?>
@@ -62,7 +61,7 @@ foreach ($conf["repos"] as $name => $location)
 // 	var_dump($output); die;
 	?>
 	<tr>
-		<td><a href="./repository.php?location=<?= $location ?>"><?= $name ?></a></td>
+		<td><a href="<?= $BASE . $f3->alias("repository", [], ["location" => $location]) ?>"><?= $name ?></a></td>
 		<?php
 		if(!is_array($output))
 		{

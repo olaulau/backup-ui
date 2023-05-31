@@ -1,6 +1,13 @@
 {
-    "require": {
+    "repositories": [
+	    {
+	        "type": "vcs",
+	    	"url": "https://github.com/olaulau/HtmlSkel"
+		}
+	],
+	"require": {
         "olafnorge/borgphp": "^0.1.2",
-        "gabrielelana/byte-units": "^0.5.0"
+        "gabrielelana/byte-units": "^0.5.0",
+        "olaulau/htmlskel": "dev-master"
     }
 }

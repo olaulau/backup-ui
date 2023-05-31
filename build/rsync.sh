@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source rsync.conf.sh
+source build/rsync.conf.sh
 
 time rsync \
 --verbose --progress --itemize-changes --stats \
