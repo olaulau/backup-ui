@@ -35,11 +35,10 @@ foreach ($conf["repos"] as $name => $location)
 		$error_message = $errors[0]["message"];
 		if(str_starts_with($error_message, "Failed to create/acquire the lock "))
 		{
-			$output = "LOCK_FAIL";
+			$output = "LOCK";
 		}
 		else
 		{
-// 			"PermissionError: [Errno 13] Permission denied: '/home/imp/borg/lock.exclusive'";
 			$error_message = $errors[1]["message"];
 			if
 			(
@@ -47,15 +46,17 @@ foreach ($conf["repos"] as $name => $location)
 				strpos($error_message, "lock.exclusive") !== false
 			)
 			{
-				die("LOCK");
+				$output = "LOCK";
 			}
-			
-			$output = "UNKNOWN_ERROR";
-			$error_string .= "<hr>";
-			$error_string .= "<hr>";
-			$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
-			$error_string .= "<hr>";
-			$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
+			else
+			{
+				$output = "UNKNOWN_ERROR";
+				$error_string .= "<hr>";
+				$error_string .= "<hr>";
+				$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
+				$error_string .= "<hr>";
+				$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
+			}
 		}
 	}
 // 	var_dump($output); die;
@@ -66,7 +67,7 @@ foreach ($conf["repos"] as $name => $location)
 		if(!is_array($output))
 		{
 			$display = "";
-			if($output === "LOCK_FAIL")
+			if($output === "LOCK")
 			{
 				$display = "locked";
 			}
