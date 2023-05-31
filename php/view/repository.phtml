@@ -1,4 +1,13 @@
 <?php
+require_once __DIR__.'/layout/head.phtml';
+?>
+
+<?php
+require_once __DIR__.'/layout/header.phtml';
+?>
+
+
+<?php
 require __DIR__ . '/../../config.inc.php';
 
 use olafnorge\borgphp\ListCommand;
@@ -59,3 +68,13 @@ foreach ($output["archives"] as $archive)
 	<th><?= count($output["archives"]) ?></th>
 </tr>
 </table>
+
+
+<?php
+require_once __DIR__.'/layout/footer.phtml';
+?>
+
+<?php
+require_once __DIR__.'/layout/foot.phtml';
+?>
+

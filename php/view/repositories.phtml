@@ -1,4 +1,13 @@
 <?php
+require_once __DIR__.'/layout/head.phtml';
+?>
+
+<?php
+require_once __DIR__.'/layout/header.phtml';
+?>
+
+
+<?php
 require __DIR__ . '/../../config.inc.php';
 
 use olafnorge\borgphp\InfoCommand;
@@ -102,3 +111,11 @@ foreach ($conf["repos"] as $name => $location)
 </table>
 
 <?= $error_string ?>
+
+<?php
+require_once __DIR__.'/layout/footer.phtml';
+?>
+
+<?php
+require_once __DIR__.'/layout/foot.phtml';
+?>

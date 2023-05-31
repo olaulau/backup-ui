@@ -4,6 +4,6 @@ $conf =
 [
 	"repos" => 
 	[
-		"<path>",
+		"name" => "path",
 	],
 ];
