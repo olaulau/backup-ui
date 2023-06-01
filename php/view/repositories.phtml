@@ -6,6 +6,8 @@ require_once __DIR__.'/layout/head.phtml';
 require_once __DIR__.'/layout/header.phtml';
 ?>
 
+	<!-- Begin page content -->
+	<main role="main" class="container">
 
 <?php
 require __DIR__ . '/../../config.inc.php';
@@ -111,6 +113,7 @@ foreach ($conf["repos"] as $name => $location)
 </table>
 
 <?= $error_string ?>
+	</main>
 
 <?php
 require_once __DIR__.'/layout/footer.phtml';

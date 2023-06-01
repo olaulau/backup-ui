@@ -6,6 +6,8 @@ require_once __DIR__.'/layout/head.phtml';
 require_once __DIR__.'/layout/header.phtml';
 ?>
 
+	<!-- Begin page content -->
+	<main role="main" class="container">
 
 <?php
 require __DIR__ . '/../../config.inc.php';
@@ -69,6 +71,7 @@ foreach ($output["archives"] as $archive)
 </tr>
 </table>
 
+	</main>
 
 <?php
 require_once __DIR__.'/layout/footer.phtml';
