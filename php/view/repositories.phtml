@@ -49,26 +49,33 @@ foreach ($conf["repos"] as $name => $location)
 		}
 		else
 		{
-			$error_message = $errors[1]["message"];
-			if
-			(
-				strpos($error_message, "PermissionError: [Errno 13] Permission denied") !== false && 
-				(
-				strpos($error_message, "lock.exclusive") !== false || 
-				strpos($error_message, "lock.roster") !== false
-				)
-			)
+			if(isset($errors[1]))
 			{
-				$output = "LOCK";
+				$error_message = $errors[1]["message"];
+				if
+				(
+					strpos($error_message, "PermissionError: [Errno 13] Permission denied") !== false && 
+					(
+					strpos($error_message, "lock.exclusive") !== false || 
+					strpos($error_message, "lock.roster") !== false
+					)
+				)
+				{
+					$output = "LOCK";
+				}
+				else
+				{
+					$output = "UNKNOWN_ERROR";
+					$error_string .= "<hr>";
+					$error_string .= "<hr>";
+					$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
+					$error_string .= "<hr>";
+					$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
+				}
 			}
 			else
 			{
-				$output = "UNKNOWN_ERROR";
-				$error_string .= "<hr>";
-				$error_string .= "<hr>";
-				$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
-				$error_string .= "<hr>";
-				$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
+				$output = "ERROR";
 			}
 		}
 	}
