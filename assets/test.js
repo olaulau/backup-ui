@@ -5,21 +5,18 @@ const data = {
 		label: 'archives',
 		data: [
 			{
-				x: 0,
+				x: 2,
 				y: 0,
-				r: 10,
 				date: '2023-06-01',
 			},
 			{
-				x: 31,
+				x: 5,
 				y: 0,
-				r: 10,
 				date: '2023-05-01',
 			},
 			{
 				x: 60,
 				y: 0,
-				r: 10,
 				date: '2023-04-01'
 			},
 		],
@@ -36,12 +33,15 @@ const config = {
 			x: {
 				type: 'logarithmic',
 				position: 'bottom',
+				min: 1,
+				max: 100,
 			},
 			y: {
 				display: false,
 			}
 		},
-		maintainAspectRatio: false
+		maintainAspectRatio: false,
+		pointRadius: 10
 	}
 };
 
