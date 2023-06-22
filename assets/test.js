@@ -1,5 +1,3 @@
-const labels = ['2023-06-01', '2023-05-01', '2023-04-01'];
-
 const data = {
 	datasets: [{
 		label: 'archives',
@@ -17,12 +15,11 @@ const data = {
 			{
 				x: 60,
 				y: 0,
-				date: '2023-04-01'
+				date: '2023-04-01',
 			},
 		],
 		backgroundColor: 'rgb(255, 0, 0)'
-	}],
-	labels: labels
+	}]
 };
 
 const config = {
@@ -34,14 +31,33 @@ const config = {
 				type: 'logarithmic',
 				position: 'bottom',
 				min: 1,
-				max: 100,
+				max: 10000,
+				ticks: {
+					maxRotation: 90,
+                    minRotation: 90,
+                    callback: function(value, index, ticks) {
+                        return value + "sec ago";
+                    }
+                }
 			},
 			y: {
 				display: false,
 			}
 		},
 		maintainAspectRatio: false,
-		pointRadius: 10
+		pointRadius: 10,
+		plugins: {
+			tooltip: {
+				callbacks: {
+                    label: function(context) {
+                        return "";
+                    },
+                    title: function(context) {
+                        return context[0].raw.date;
+                    }
+                }
+			},
+		}
 	}
 };
 
