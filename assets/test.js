@@ -1,23 +1,25 @@
+var now = Math.round(new Date().getTime() / 1000);
+//console.log( now );
+
+var x_timestamp_scale = 60*60*24; // 1d
+
+var archives_data = [];
+js_data.forEach((timestamp) => {
+	var x = Math.round((now - timestamp) / x_timestamp_scale); // timestamp diff scaled
+	var date = new Date(timestamp*1000);
+	var dateString = date.toISOString().slice(0, -5).replace('T', ' '); //TODO handle timezone shift
+	archives_data.push({
+		x: x,
+		y: 0,
+		date: dateString,
+	});
+});
+
+
 const data = {
 	datasets: [{
 		label: 'archives',
-		data: [
-			{
-				x: 2,
-				y: 0,
-				date: '2023-06-01',
-			},
-			{
-				x: 5,
-				y: 0,
-				date: '2023-05-01',
-			},
-			{
-				x: 60,
-				y: 0,
-				date: '2023-04-01',
-			},
-		],
+		data: archives_data,
 		backgroundColor: 'rgb(255, 0, 0)'
 	}]
 };
@@ -31,12 +33,16 @@ const config = {
 				type: 'logarithmic',
 				position: 'bottom',
 				min: 1,
-				max: 10000,
+				max: (60*60*24*365*10) / x_timestamp_scale, // 10 y scaled
 				ticks: {
 					maxRotation: 90,
                     minRotation: 90,
+                    maxTicksLimit: 30,
                     callback: function(value, index, ticks) {
-                        return value + "sec ago";
+						var timestamp = now - (value * x_timestamp_scale);
+						var date = new Date(timestamp*1000);
+						var dateString = date.toISOString().slice(0, -5).replace('T', ' '); //TODO shorter date (time) format
+                        return dateString;
                     }
                 }
 			},
@@ -45,7 +51,7 @@ const config = {
 			}
 		},
 		maintainAspectRatio: false,
-		pointRadius: 10,
+		pointRadius: 5,
 		plugins: {
 			tooltip: {
 				callbacks: {
