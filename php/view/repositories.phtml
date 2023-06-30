@@ -42,7 +42,10 @@ foreach ($conf["repos"] as $name => $location)
 	catch (Exception $ex)
 	{
 		$errors = $cmd->getErrorOutput();
-		$error_message = $errors[0]["message"];
+		if(is_array($errors[0]))
+			$error_message = $errors[0]["message"];
+		else
+			$error_message = $errors[0];
 		if(str_starts_with($error_message, "Failed to create/acquire the lock "))
 		{
 			$output = "LOCK";
