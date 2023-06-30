@@ -54,7 +54,10 @@ foreach ($conf["repos"] as $name => $location)
 		{
 			if(isset($errors[1]))
 			{
-				$error_message = $errors[1]["message"];
+				if(is_array($errors[1]))
+					$error_message = $errors[1]["message"];
+				else
+					$error_message = $errors[1];
 				if
 				(
 					strpos($error_message, "PermissionError: [Errno 13] Permission denied") !== false && 
