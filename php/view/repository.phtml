@@ -9,39 +9,21 @@ require_once __DIR__.'/layout/header.phtml';
 	<!-- Begin page content -->
 	<main role="main" class="container">
 
-<?php
-require __DIR__ . '/../../config.inc.php';
-
-use olafnorge\borgphp\ListCommand;
-
-$location = $_GET["location"];
-$repo_name = array_search($location, $conf["repos"]);
-
-// list repository's archives
-$cmd = new ListCommand([
-	$location,
-]);
-
-$cmd->setEnv([
-	"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK" => "yes",
-]);
-try
-{
-	$output = $cmd->mustRun()->getOutput();
-}
-catch (Exception $e)
-{
-	echo "<pre>" . $e->getMessage() . "</pre>";
-	echo "<hr>";
-	$err = $cmd->getErrorOutput();
-	echo "<pre>"; var_dump($err); echo "</pre>";
-	die;
-}
-// 	var_dump($output); die;
-
-?>
 <h1> <?= $repo_name ?> </h1>
 <h2> archives </h2>
+
+
+<script type="text/javascript">
+var js_data = <?= json_encode($js_data) ?>
+</script>
+
+<div style="height: 250px;">
+	<canvas id="archives_chart"></canvas>
+</div>
+
+<script src="<?= $BASE . "/node_modules/chart.js/dist/chart.umd.js" ?>"></script>
+<script src="<?= $BASE . "/assets/test.js" ?>"></script>
+
 
 <table>
 <tr>
