@@ -22,6 +22,7 @@ class RepositoryCtrl
 	public static function listGET ($f3)
 	{
 		require __DIR__ . '/../../config.inc.php';
+		$f3->set("conf", $conf);
 
 		$error_string = "";
 		$outputs = [];
@@ -83,7 +84,7 @@ class RepositoryCtrl
 					}
 				}
 			}
-		// 	var_dump($output); die;
+// 			var_dump($output); die;
 			$outputs[$name] = $output;
 		}
 		$f3->set("outputs", $outputs);
@@ -123,11 +124,13 @@ class RepositoryCtrl
 			echo "<pre>"; var_dump($err); echo "</pre>";
 			die;
 		}
-		// 	var_dump($output); die;
-		$f3->set("output", $output);
+// 		var_dump($output); die;
+		
+		$archives = array_reverse($output["archives"]);
+		$f3->set("archives", $archives);
 		
 		$js_data = [];
-		foreach ($output["archives"] as $archive)
+		foreach ($archives as $archive)
 		{
 			$dt = new \DateTime($archive["start"]);
 			$js_data [] = $dt->getTimestamp();

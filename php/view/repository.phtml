@@ -32,7 +32,7 @@ var js_data = <?= json_encode($js_data) ?>
 </tr>
 
 <?php
-foreach ($output["archives"] as $archive)
+foreach ($archives as $archive)
 {
 	?>
 	<?php
@@ -49,7 +49,7 @@ foreach ($output["archives"] as $archive)
 
 <tr>
 	<th>count</th>
-	<th><?= count($output["archives"]) ?></th>
+	<th><?= count($archives) ?></th>
 </tr>
 </table>
 
