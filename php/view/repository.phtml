@@ -22,13 +22,13 @@ var js_data = <?= json_encode($js_data) ?>
 </div>
 
 <script src="<?= $BASE . "/node_modules/chart.js/dist/chart.umd.js" ?>"></script>
-<script src="<?= $BASE . "/assets/test.js" ?>"></script>
+<script src="<?= $BASE . "/assets/graph.js" ?>"></script>
 
 
-<table>
+<table class="table table-bordered my-3">
 <tr>
-	<th>name</th>
 	<th>start</th>
+	<th>name</th>
 </tr>
 
 <?php
@@ -40,8 +40,8 @@ foreach ($archives as $archive)
 	$start =  $dt->format("d/m/Y H:i:s");
 	?>
 	<tr>
-		<td><?= $archive["name"] ?></td>
 		<td><?= $start ?></td>
+		<td><?= $archive["name"] ?></td>
 	</tr>
 	<?php
 }

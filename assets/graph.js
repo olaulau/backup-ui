@@ -33,16 +33,14 @@ const config = {
 				type: 'logarithmic',
 				position: 'bottom',
 				min: 1,
-				max: (60*60*24*365*10) / x_timestamp_scale, // 10 y scaled
+				max: (60*60*24*365*10) / x_timestamp_scale, // 10y scaled
 				ticks: {
 					maxRotation: 90,
                     minRotation: 90,
                     maxTicksLimit: 30,
                     callback: function(value, index, ticks) {
-						var timestamp = now - (value * x_timestamp_scale);
-						var date = new Date(timestamp*1000);
-						var dateString = date.toISOString().slice(0, -5).replace('T', ' '); //TODO shorter date (time) format
-                        return dateString;
+//						var seconds_diff = value * x_timestamp_scale;
+                        return value + " days ago";
                     }
                 }
 			},

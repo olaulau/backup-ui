@@ -142,11 +142,4 @@ class RepositoryCtrl
 		echo $view->render('repository.phtml');
 	}
 	
-	
-	public static function testGET ()
-	{
-		$view = new \View();
-		echo $view->render('test.phtml');
-	}
-	
 }
