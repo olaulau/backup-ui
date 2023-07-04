@@ -1,4 +1,6 @@
 <?php
+use olafnorge\borgphp\InfoCommand;
+
 require_once __DIR__.'/layout/head.phtml';
 ?>
 
@@ -9,83 +11,22 @@ require_once __DIR__.'/layout/header.phtml';
 	<!-- Begin page content -->
 	<main role="main" class="container">
 
+		<h1> borg backups </h1>
+		<h2> repositories </h2>
+		
+		<table>
+			<tr>
+				<th>name</th>
+				<th>size</th>
+			</tr>
+
 <?php
 require __DIR__ . '/../../config.inc.php';
 
-use olafnorge\borgphp\InfoCommand;
-?>
-
-<h1> borg backups </h1>
-<h2> repositories </h2>
-
-<table>
-<tr>
-	<th>name</th>
-	<th>size</th>
-</tr>
-
-<?php
-$error_string = "";
 $total_size = 0;
-foreach ($conf["repos"] as $name => $location)
+foreach ($outputs as $name => $output)
 {
-	$cmd = new InfoCommand([
-		$location,
-	]);
-	$cmd->setEnv([
-		"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK" => "yes",
-	]);
-	try
-	{
-		$output = $cmd->mustRun()->getOutput();
-	}
-	catch (Exception $ex)
-	{
-		$errors = $cmd->getErrorOutput();
-		if(is_array($errors[0]))
-			$error_message = $errors[0]["message"];
-		else
-			$error_message = $errors[0];
-		if(str_starts_with($error_message, "Failed to create/acquire the lock "))
-		{
-			$output = "LOCK";
-		}
-		else
-		{
-			if(isset($errors[1]))
-			{
-				if(is_array($errors[1]))
-					$error_message = $errors[1]["message"];
-				else
-					$error_message = $errors[1];
-				if
-				(
-					strpos($error_message, "PermissionError: [Errno 13] Permission denied") !== false && 
-					(
-					strpos($error_message, "lock.exclusive") !== false || 
-					strpos($error_message, "lock.roster") !== false
-					)
-				)
-				{
-					$output = "LOCK";
-				}
-				else
-				{
-					$output = "UNKNOWN_ERROR";
-					$error_string .= "<hr>";
-					$error_string .= "<hr>";
-					$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
-					$error_string .= "<hr>";
-					$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
-				}
-			}
-			else
-			{
-				$output = "ERROR";
-			}
-		}
-	}
-// 	var_dump($output); die;
+	$location = $conf["repos"][$name];
 	?>
 	<tr>
 		<td><a href="<?= $BASE . $f3->alias("repository", [], ["location" => $location]) ?>"><?= $name ?></a></td>
@@ -118,15 +59,15 @@ foreach ($conf["repos"] as $name => $location)
 }
 ?>
 
-<tr>
-	<th>sum</th>
-	<th><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
-</tr>
-<tr>
-	<th>count</th>
-	<th><?= count($conf["repos"]) ?></th>
-</tr>
-</table>
+				<tr>
+					<th>sum</th>
+					<th><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
+				</tr>
+				<tr>
+					<th>count</th>
+					<th><?= count($conf["repos"]) ?></th>
+				</tr>
+		</table>
 
 <?= $error_string ?>
 	</main>
