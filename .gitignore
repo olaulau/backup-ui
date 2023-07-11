@@ -1,4 +1,4 @@
 /vendor/
 /node_modules/
 /config.inc.php
-/build/rsync.conf.sh
+/script/dev.conf.sh

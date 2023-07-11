@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source build/rsync.conf.sh
+source script/dev.conf.sh
 
 for dest in "${DESTS[@]}"
 do
