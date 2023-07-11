@@ -1,5 +1,5 @@
 #!/bin/bash
 
 SRC="./"
-DEST="user@host:/path/"
+DESTS=( "user@host1:/path/" "user@host2:/path/" )
 DEST_PORT="22"

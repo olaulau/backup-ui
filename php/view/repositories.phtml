@@ -67,7 +67,7 @@ foreach ($outputs as $name => $output)
 				</tr>
 		</table>
 
-<?= $error_string ?>
+<?= html_entity_decode($error_string) ?>
 	</main>
 
 <?php
