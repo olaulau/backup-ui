@@ -22,12 +22,13 @@ require_once __DIR__.'/layout/header.phtml';
 
 <?php
 $total_size = 0;
-foreach ($outputs as $name => $output)
+foreach ($data as $name => $row)
 {
-	$location = $conf["repos"][$name];
+	$output = $row["output"];
+	$repo = $conf["repos"][$name];
 	?>
 	<tr>
-		<td><a href="<?= $BASE . $f3->alias("repository", [], ["location" => $location]) ?>"><?= $name ?></a></td>
+		<td><a href="<?= $BASE . $f3->alias("repository", ["repo_name" => $name], []) ?>"><?= $repo["label"] ?></a></td>
 		<?php
 		if(!is_array($output))
 		{

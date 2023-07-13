@@ -21,13 +21,13 @@ class RepositoryCtrl
 	
 	public static function listGET ($f3)
 	{
-		require __DIR__ . '/../../config.inc.php';
-		$f3->set("conf", $conf);
+		$repos = $f3->get("conf.repos");
 
 		$error_string = "";
-		$outputs = [];
-		foreach ($conf["repos"] as $name => $location)
+		$data = [];
+		foreach ($repos as $name => $label)
 		{
+			$location = "/home/$name/borg/";
 			$cmd = new InfoCommand([
 				$location,
 			]);
@@ -85,9 +85,10 @@ class RepositoryCtrl
 				}
 			}
 // 			var_dump($output); die;
-			$outputs[$name] = $output;
+			$data[$name]["output"] = $output;
+			$data[$name]["location"] = $location;
 		}
-		$f3->set("outputs", $outputs);
+		$f3->set("data", $data);
 		$f3->set("error_string", $error_string);
 		
 		$view = new \View();
@@ -97,12 +98,11 @@ class RepositoryCtrl
 	
 	public static function viewGET ($f3)
 	{
-		require __DIR__ . '/../../config.inc.php';
-
-		$location = $_GET["location"];
-		$f3->set("location", $location);
-		$repo_name = array_search($location, $conf["repos"]);
-		$f3->set("repo_name", $repo_name);
+		$repo_name = $f3->get("PARAMS.repo_name");
+		$location = "/home/$repo_name/borg/";
+		
+		$repo_label = $f3->get("conf.repos.$repo_name.label");
+		$f3->set("repo_label", $repo_label);
 		
 		// list repository's archives
 		$cmd = new ListCommand([
@@ -147,7 +147,7 @@ class RepositoryCtrl
 	{
 		$cache = \Cache::instance();
 		
-		$repo_name = $f3->get("PARAMS.repo");
+		$repo_name = $f3->get("PARAMS.repo_name");
 		$location = "/home/$repo_name/borg/";
 
 		//TODO check borg lock files exist (manually)
