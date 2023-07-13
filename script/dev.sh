@@ -7,7 +7,7 @@ do
 	time rsync \
 	--verbose --progress --itemize-changes --stats \
 	--recursive --times --delete \
-	--exclude-from ~/.gitignore --exclude .git   \
+	--exclude-from ~/.gitignore --exclude .git --exclude tmp \
 	-e "ssh -p $DEST_PORT" "$SRC" "$dest"
 	
 	# --exclude-from ./.gitignore

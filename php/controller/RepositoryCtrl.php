@@ -142,4 +142,48 @@ class RepositoryCtrl
 		echo $view->render('repository.phtml');
 	}
 	
+	
+	public static function cacheAllGET ($f3)
+	{
+		// test data
+		$repo_name = "otg";
+		$location = "/home/$repo_name/borg/";
+
+		$cache = \Cache::instance();
+
+		//TODO check borg lock files exist (manually)
+		
+		// repo infos
+		$cmd = "borg info $location --json";
+		\exec($cmd, $output, $result_code);
+		$output = \implode(PHP_EOL, $output);
+		$repo = \json_decode($output, true);
+// 		var_dump($result_code, $repo); die;
+		$cache_key = "repo($repo_name)-info";
+		$cache->set($cache_key, $repo);
+		
+		// repo's archive list
+		$cmd = "borg list $location --json";
+		\exec($cmd, $output, $result_code);
+		$output = \implode(PHP_EOL, $output);
+		$archives_list = \json_decode($output, true);
+		$archives = $archives_list["archives"];
+// 		var_dump($result_code, $archives);
+		$cache_key = "repo($repo_name)-list";
+		$cache->set($cache_key, $archives_list);
+		
+		foreach ($archives as $i => $archive)
+		{
+			// archive info
+			$archive_name = $archive["name"];
+			$cmd = "borg info $location::$archive_name --json";
+			\exec($cmd, $output, $result_code);
+			$output = \implode(PHP_EOL, $output);
+			$archive_infos = \json_decode($output, true);
+// 			var_dump($archive_name, $result_code, $archive_infos);
+			$cache_key = "repo($repo_name)-archive($archive_name)-info";
+			$cache->set($cache_key, $archive_infos);
+		}
+	}
+	
 }
