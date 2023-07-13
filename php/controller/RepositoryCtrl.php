@@ -143,13 +143,12 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cacheAllGET ($f3)
+	public static function cacheRepoGET ($f3)
 	{
-		// test data
-		$repo_name = "otg";
-		$location = "/home/$repo_name/borg/";
-
 		$cache = \Cache::instance();
+		
+		$repo_name = $f3->get("PARAMS.repo");
+		$location = "/home/$repo_name/borg/";
 
 		//TODO check borg lock files exist (manually)
 		
