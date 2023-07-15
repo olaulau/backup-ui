@@ -4,6 +4,7 @@ namespace controller;
 use model\RepositoryInfoMdl;
 use olafnorge\borgphp\InfoCommand;
 use olafnorge\borgphp\ListCommand;
+use model\RepositoryListMdl;
 
 class RepositoryCtrl
 {
@@ -29,8 +30,8 @@ class RepositoryCtrl
 		foreach ($repos as $name => $label)
 		{
 			$repo = new RepositoryInfoMdl($name);
-			$repo_infos = $repo->getInfo();
-			$data[$name] = $repo_infos;
+			$repo_info_value = $repo->getValue();
+			$data[$name] = $repo_info_value;
 		}
 		$f3->set("data", $data);
 		
@@ -42,34 +43,15 @@ class RepositoryCtrl
 	public static function viewGET ($f3)
 	{
 		$repo_name = $f3->get("PARAMS.repo_name");
-		$location = "/home/$repo_name/borg/";
-		
 		$repo_label = $f3->get("conf.repos.$repo_name.label");
 		$f3->set("repo_label", $repo_label);
 		
-		// list repository's archives
-		$cmd = new ListCommand([
-			$location,
-		]);
+		$repo_info = new RepositoryInfoMdl($repo_name);		
+		$repo_list = new RepositoryListMdl($repo_info);
+		$repo_list_value = $repo_list->getValue();
+// 		var_dump($repo_list_value); die;
 		
-		$cmd->setEnv([
-			"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK" => "yes",
-		]);
-		try
-		{
-			$output = $cmd->mustRun()->getOutput();
-		}
-		catch (\Exception $ex)
-		{
-			echo "<pre>" . $ex->getMessage() . "</pre>";
-			echo "<hr>";
-			$err = $cmd->getErrorOutput();
-			echo "<pre>"; var_dump($err); echo "</pre>";
-			die;
-		}
-// 		var_dump($output); die;
-		
-		$archives = array_reverse($output["archives"]);
+		$archives = array_reverse($repo_list_value["archives"]);
 		$f3->set("archives", $archives);
 		
 		$js_data = [];
@@ -91,23 +73,17 @@ class RepositoryCtrl
 		$cache = \Cache::instance();
 		
 		$repo_name = $f3->get("PARAMS.repo_name");
-		$repo_info = new RepositoryInfoMdl($repo_name);
-		$location = $repo_info->getLocation();
 
 		//TODO manually check borg lock files exist
 		
 		// repo infos
+		$repo_info = new RepositoryInfoMdl($repo_name);
+		$location = $repo_info->getLocation();
 		$repo_info->updateCache();
 		
 		// repo's archive list
-		$cmd = "borg list $location --json";
-		\exec($cmd, $output, $result_code);
-		$output = \implode(PHP_EOL, $output);
-		$archives_list = \json_decode($output, true);
-		$archives = $archives_list["archives"];
-// 		var_dump($result_code, $archives);
-		$cache_key = "repo($repo_name)-list";
-		$cache->set($cache_key, $archives_list);
+		$repo_list = new RepositoryListMdl($repo_info);
+		$repo_list->updateCache();
 		
 		die; ///////////////////
 		

@@ -13,7 +13,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	public function getRepoNAme ()
+	public function getRepoName ()
 	{
 		return $this->repo_name;
 	}

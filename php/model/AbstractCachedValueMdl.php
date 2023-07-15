@@ -11,7 +11,7 @@ abstract class AbstractCachedValueMdl
 	abstract protected function calculateValue ();
 	
 	
-	public function getInfo()
+	public function getValue()
 	{
 		$f3 = \Base::instance();
 		$cache = \Cache::instance();
