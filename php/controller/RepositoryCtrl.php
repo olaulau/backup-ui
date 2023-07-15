@@ -1,6 +1,7 @@
 <?php
 namespace controller;
 
+use model\RepositoryInfoMdl;
 use olafnorge\borgphp\InfoCommand;
 use olafnorge\borgphp\ListCommand;
 
@@ -27,69 +28,11 @@ class RepositoryCtrl
 		$data = [];
 		foreach ($repos as $name => $label)
 		{
-			$location = "/home/$name/borg/";
-			$cmd = new InfoCommand([
-				$location,
-			]);
-			$cmd->setEnv([
-				"BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK" => "yes",
-			]);
-			try
-			{
-				$output = $cmd->mustRun()->getOutput();
-			}
-			catch (\Exception $ex)
-			{
-				$errors = $cmd->getErrorOutput();
-				if(is_array($errors[0]))
-					$error_message = $errors[0]["message"];
-				else
-					$error_message = $errors[0];
-				if(str_starts_with($error_message, "Failed to create/acquire the lock "))
-				{
-					$output = "LOCK";
-				}
-				else
-				{
-					if(isset($errors[1]))
-					{
-						if(is_array($errors[1]))
-							$error_message = $errors[1]["message"];
-						else
-							$error_message = $errors[1];
-						if
-						(
-							strpos($error_message, "PermissionError: [Errno 13] Permission denied") !== false && 
-							(
-							strpos($error_message, "lock.exclusive") !== false || 
-							strpos($error_message, "lock.roster") !== false
-							)
-						)
-						{
-							$output = "LOCK";
-						}
-						else
-						{
-							$output = "UNKNOWN_ERROR";
-							$error_string .= "<hr>";
-							$error_string .= "<hr>";
-							$error_string .= "<pre>" . $ex->getMessage() . "</pre>";
-							$error_string .= "<hr>";
-							$error_string .= "<pre>" . var_export($errors, true) . "</pre>";
-						}
-					}
-					else
-					{
-						$output = "ERROR";
-					}
-				}
-			}
-// 			var_dump($output); die;
-			$data[$name]["output"] = $output;
-			$data[$name]["location"] = $location;
+			$repo = new RepositoryInfoMdl($name);
+			$repo_infos = $repo->getInfo();
+			$data[$name] = $repo_infos;
 		}
 		$f3->set("data", $data);
-		$f3->set("error_string", $error_string);
 		
 		$view = new \View();
 		echo $view->render('repositories.phtml');
@@ -148,18 +91,13 @@ class RepositoryCtrl
 		$cache = \Cache::instance();
 		
 		$repo_name = $f3->get("PARAMS.repo_name");
-		$location = "/home/$repo_name/borg/";
+		$repo_info = new RepositoryInfoMdl($repo_name);
+		$location = $repo_info->getLocation();
 
-		//TODO check borg lock files exist (manually)
+		//TODO manually check borg lock files exist
 		
 		// repo infos
-		$cmd = "borg info $location --json";
-		\exec($cmd, $output, $result_code);
-		$output = \implode(PHP_EOL, $output);
-		$repo = \json_decode($output, true);
-// 		var_dump($result_code, $repo); die;
-		$cache_key = "repo($repo_name)-info";
-		$cache->set($cache_key, $repo);
+		$repo_info->updateCache();
 		
 		// repo's archive list
 		$cmd = "borg list $location --json";
@@ -170,6 +108,8 @@ class RepositoryCtrl
 // 		var_dump($result_code, $archives);
 		$cache_key = "repo($repo_name)-list";
 		$cache->set($cache_key, $archives_list);
+		
+		die; ///////////////////
 		
 		foreach ($archives as $i => $archive)
 		{

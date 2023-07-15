@@ -1,4 +1,7 @@
 <?php
-class Mdl {
+namespace model;
+
+abstract class Mdl
+{
 	
 }

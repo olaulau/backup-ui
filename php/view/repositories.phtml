@@ -22,37 +22,18 @@ require_once __DIR__.'/layout/header.phtml';
 
 <?php
 $total_size = 0;
-foreach ($data as $name => $row)
+foreach ($data as $name => $repo_infos)
 {
-	$output = $row["output"];
 	$repo = $conf["repos"][$name];
 	?>
 	<tr>
 		<td><a href="<?= $BASE . $f3->alias("repository", ["repo_name" => $name], []) ?>"><?= $repo["label"] ?></a></td>
 		<?php
-		if(!is_array($output))
-		{
-			$display = "";
-			if($output === "LOCK")
-			{
-				$display = "locked";
-			}
-			else 
-			{
-				$display = "error";
-			}
-			?>
-			<td><?= $display ?></td>
-			<?php
-		}
-		else
-		{
-			$total_size += $output["cache"]["stats"]["unique_csize"];
-			?>
-			<td><?= ByteUnits\Binary::bytes($output["cache"]["stats"]["unique_csize"])->format("GiB", " ") ?></td>
-			<?php
-		}
+// 		var_dump($repo_infos); die;
+		$size = $repo_infos["cache"]["stats"]["unique_csize"];
+		$total_size += $size;
 		?>
+		<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
 	</tr>
 	<?php
 }
@@ -68,7 +49,6 @@ foreach ($data as $name => $row)
 				</tr>
 		</table>
 
-<?= html_entity_decode($error_string) ?>
 	</main>
 
 <?php
