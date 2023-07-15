@@ -5,6 +5,7 @@ use model\RepositoryInfoMdl;
 use olafnorge\borgphp\InfoCommand;
 use olafnorge\borgphp\ListCommand;
 use model\RepositoryListMdl;
+use model\ArchiveInfoMdl;
 
 class RepositoryCtrl
 {
@@ -83,21 +84,15 @@ class RepositoryCtrl
 		
 		// repo's archive list
 		$repo_list = new RepositoryListMdl($repo_info);
-		$repo_list->updateCache();
+		$repo_list_value = $repo_list->updateCache();
 		
 		die; ///////////////////
 		
-		foreach ($archives as $i => $archive)
+		foreach ($repo_list_value["archives"] as $archive)
 		{
-			// archive info
 			$archive_name = $archive["name"];
-			$cmd = "borg info $location::$archive_name --json";
-			\exec($cmd, $output, $result_code);
-			$output = \implode(PHP_EOL, $output);
-			$archive_infos = \json_decode($output, true);
-// 			var_dump($archive_name, $result_code, $archive_infos);
-			$cache_key = "repo($repo_name)-archive($archive_name)-info";
-			$cache->set($cache_key, $archive_infos);
+			$archive_info = new ArchiveInfoMdl($repo_info, $archive_name);
+			$archive_info->updateCache();
 		}
 	}
 	
