@@ -1,11 +1,9 @@
 <?php
 namespace controller;
 
-use model\RepositoryInfoMdl;
-use olafnorge\borgphp\InfoCommand;
-use olafnorge\borgphp\ListCommand;
-use model\RepositoryListMdl;
 use model\ArchiveInfoMdl;
+use model\RepositoryInfoMdl;
+use model\RepositoryListMdl;
 
 class RepositoryCtrl
 {
@@ -50,7 +48,6 @@ class RepositoryCtrl
 		$repo_info = new RepositoryInfoMdl($repo_name);		
 		$repo_list = new RepositoryListMdl($repo_info);
 		$repo_list_value = $repo_list->getValue();
-// 		var_dump($repo_list_value); die;
 		
 		$archives = array_reverse($repo_list_value["archives"]);
 		$f3->set("archives", $archives);
