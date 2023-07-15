@@ -1,5 +1,4 @@
 <?php
-use olafnorge\borgphp\InfoCommand;
 
 require_once __DIR__.'/layout/head.phtml';
 ?>
@@ -27,13 +26,24 @@ foreach ($data as $name => $repo_infos)
 	$repo = $conf["repos"][$name];
 	?>
 	<tr>
-		<td><a href="<?= $BASE . $f3->alias("repository", ["repo_name" => $name], []) ?>"><?= $repo["label"] ?></a></td>
 		<?php
-// 		var_dump($repo_infos); die;
-		$size = $repo_infos["cache"]["stats"]["unique_csize"];
-		$total_size += $size;
+		if(!empty($repo_infos))
+		{
+			$size = $repo_infos["cache"]["stats"]["unique_csize"];
+			$total_size += $size;
+			?>
+			<td><a href="<?= $BASE . $f3->alias("repository", ["repo_name" => $name], []) ?>"><?= $repo["label"] ?></a></td>
+			<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
+			<?php
+		}
+		else
+		{ // cache return empty value, so even calculation failed. will be fixed on when cache is correctly filled
+			?>
+			<td><?= $repo["label"] ?></td>
+			<td> ? </td>
+			<?php
+		}
 		?>
-		<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
 	</tr>
 	<?php
 }

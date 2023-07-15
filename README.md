@@ -1,4 +1,14 @@
+# requirements
+- borg & borgmatic (recent versions), on both client and server
 
-uses :
-olafnorge/borgphp : lib for running borg commands
+# install
+
+
+# configure
+
+
+# usage
+
+
+# uses
 gabrielelana/byte-units : size unit conversion & display
