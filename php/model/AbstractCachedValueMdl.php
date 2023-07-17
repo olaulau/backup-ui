@@ -29,7 +29,8 @@ abstract class AbstractCachedValueMdl
 		$cache = \Cache::instance();
 		
 		$value = $this->calculateValue();
-		$cache->set($this->getCacheKey(), $value);
+		if(!empty($value))
+			$cache->set($this->getCacheKey(), $value);
 		return $value;
 	}
 	
