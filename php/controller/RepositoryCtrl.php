@@ -28,9 +28,12 @@ class RepositoryCtrl
 		$data = [];
 		foreach ($repos as $name => $label)
 		{
-			$repo = new RepositoryInfoMdl($name);
-			$repo_info_value = $repo->getValue();
-			$data[$name] = $repo_info_value;
+			$repo_info = new RepositoryInfoMdl($name);
+			$repo_info_value = $repo_info->getValue();
+			$data[$name]["info"] = $repo_info_value;
+			$repo_list = new RepositoryListMdl($repo_info);
+			$repo_list_value = $repo_list->getValue();
+			$data[$name]["list"] = $repo_list_value;
 		}
 		$f3->set("data", $data);
 		

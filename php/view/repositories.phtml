@@ -11,36 +11,45 @@ require_once __DIR__.'/layout/header.phtml';
 	<main role="main" class="container">
 
 		<h1> borg backups </h1>
-		<h2> repositories </h2>
+		<h2> repositories (<?= count($conf["repos"]) ?>) </h2>
 		
 		<table class="table table-bordered my-3">
 			<tr>
 				<th>name</th>
 				<th>size</th>
+				<th># of archives</th>
+				<th>last archive</th>
 			</tr>
 
 <?php
 $total_size = 0;
-foreach ($data as $name => $repo_infos)
+foreach ($data as $name => $row)
 {
 	$repo = $conf["repos"][$name];
 	?>
 	<tr>
 		<?php
-		if(!empty($repo_infos))
+		if(!empty($row["info"]) && !empty($row["list"]))
 		{
-			$size = $repo_infos["cache"]["stats"]["unique_csize"];
+			$size = $row["info"]["cache"]["stats"]["unique_csize"];
 			$total_size += $size;
+			
+			$dt = new DateTime($row["list"]["archives"][array_key_last($row["list"]["archives"])]["start"]);
+			$start =  $dt->format("d/m/Y H:i:s");
 			?>
 			<td><a href="<?= $BASE . $f3->alias("repository", ["repo_name" => $name], []) ?>"><?= $repo["label"] ?></a></td>
 			<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
+			<td><?= count($row["list"]["archives"]) ?></td>
+			<td><?= $start ?></td>
 			<?php
 		}
 		else
 		{ // cache return empty value, so even calculation failed. will be fixed on when cache is correctly filled
 			?>
 			<td><?= $repo["label"] ?></td>
-			<td> ? </td>
+			<td> &nbps; </td>
+			<td> &nbps; </td>
+			<td> &nbps; </td>
 			<?php
 		}
 		?>
@@ -52,10 +61,8 @@ foreach ($data as $name => $repo_infos)
 				<tr>
 					<th>sum</th>
 					<th><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
-				</tr>
-				<tr>
-					<th>count</th>
-					<th><?= count($conf["repos"]) ?></th>
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
 				</tr>
 		</table>
 
