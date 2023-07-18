@@ -23,14 +23,14 @@ abstract class AbstractCachedValueMdl
 	}
 	
 	
-	public function updateCache ()
+	public function updateCache ($ttl=0)
 	{
 		$f3 = \Base::instance();
 		$cache = \Cache::instance();
 		
 		$value = $this->calculateValue();
 		if(!empty($value))
-			$cache->set($this->getCacheKey(), $value);
+			$cache->set($this->getCacheKey(), $value, $ttl);
 		return $value;
 	}
 	
