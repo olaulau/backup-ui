@@ -43,4 +43,27 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		return $repo;
 	}
 	
+	
+	function updateCacheRecursive ()
+	{
+		// TODO manually check borg lock files exist
+		
+		// repo infos
+		$this->updateCache();
+		
+		// repo's archive list
+		$repo_list = new RepositoryListMdl($this);
+		$repo_list_value = $repo_list->updateCache();
+		
+		die; ///////////////////
+		
+		// archives's infos
+		foreach ($repo_list_value["archives"] as $archive)
+		{
+			$archive_name = $archive["name"];
+			$archive_info = new ArchiveInfoMdl($this, $archive_name);
+			$archive_info->updateCache();
+		}
+	}
+	
 }

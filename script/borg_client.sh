@@ -37,6 +37,8 @@ borgmatic --config $config_file info
 
 ssh $remote_user_name@$server_name "chmod -R u+rwx,g+rwxs,o-rwx /home/$remote_user_name/borg/"
 
+url="https://$server_name/borg-ui/cache/update/$repo_name"
+curl $url
 url="https://$server_name/borg-ui_DEV/cache/update/$repo_name"
 curl $url
 

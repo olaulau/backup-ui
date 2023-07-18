@@ -69,31 +69,22 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cacheRepoGET ($f3)
+	public static function cacheUpdateGET ($f3)
 	{
-		$cache = \Cache::instance();
-		
-		$repo_name = $f3->get("PARAMS.repo_name");
-
-		//TODO manually check borg lock files exist
-		
-		// repo infos
-		$repo_info = new RepositoryInfoMdl($repo_name);
-		$location = $repo_info->getLocation();
-		$repo_info->updateCache();
-		
-		// repo's archive list
-		$repo_list = new RepositoryListMdl($repo_info);
-		$repo_list_value = $repo_list->updateCache();
-		
-		die; ///////////////////
-		
-		foreach ($repo_list_value["archives"] as $archive)
+		$repos = $f3->get("conf.repos");
+		foreach ($repos as $repo_name => $repo)
 		{
-			$archive_name = $archive["name"];
-			$archive_info = new ArchiveInfoMdl($repo_info, $archive_name);
-			$archive_info->updateCache();
+			$repo_info = new RepositoryInfoMdl($repo_name);
+			$repo_info->updateCacheRecursive();
 		}
+	}
+	
+	
+	public static function cacheUpdateRepoGET ($f3)
+	{
+		$repo_name = $f3->get("PARAMS.repo_name");
+		$repo_info = new RepositoryInfoMdl($repo_name);
+		$repo_info->updateCacheRecursive();
 	}
 	
 }
