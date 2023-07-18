@@ -45,6 +45,7 @@ class RepositoryCtrl
 	public static function viewGET ($f3)
 	{
 		$repo_name = $f3->get("PARAMS.repo_name");
+		$f3->set("repo_name", $repo_name);
 		$repo_label = $f3->get("conf.repos.$repo_name.label");
 		$f3->set("repo_label", $repo_label);
 		
@@ -63,6 +64,31 @@ class RepositoryCtrl
 		}
 		// var_dump($js_data); die;
 		$f3->set("js_data", $js_data);
+		
+		$view = new \View();
+		echo $view->render('repository.phtml');
+	}
+	
+	
+	public static function archiveGET ($f3)
+	{
+		$repo_name = $f3->get("PARAMS.repo_name");
+		$arch_name = $f3->get("PARAMS.arch_name");
+		$repo_label = $f3->get("conf.repos.$repo_name.label");
+		$f3->set("repo_label", $repo_label);
+		
+		$repo_info = new RepositoryInfoMdl($repo_name);
+		$arch_info = new ArchiveInfoMdl($repo_info, $arch_name);
+		$arch_info_value = $arch_info->getValue();
+		
+		echo "<pre>";
+		var_dump($arch_info_value);
+		echo "</pre>";
+		die;
+		/////////////////////
+		
+		
+		$f3->set("archive", $arch_info_value);
 		
 		$view = new \View();
 		echo $view->render('repository.phtml');

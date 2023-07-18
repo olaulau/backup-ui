@@ -27,21 +27,19 @@ var js_data = <?= json_encode($js_data) ?>
 
 <table class="table table-bordered my-3">
 <tr>
-	<th>start</th>
 	<th>name</th>
+	<th>start</th>
 </tr>
 
 <?php
 foreach ($archives as $archive)
 {
-	?>
-	<?php
 	$dt = new DateTime($archive["start"]);
 	$start =  $dt->format("d/m/Y H:i:s");
 	?>
 	<tr>
+		<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "arch_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
 		<td><?= $start ?></td>
-		<td><?= $archive["name"] ?></td>
 	</tr>
 	<?php
 }
