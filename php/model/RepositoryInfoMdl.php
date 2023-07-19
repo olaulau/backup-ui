@@ -54,6 +54,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		// repo's archive list
 		$repo_list = new RepositoryListMdl($this);
 		$repo_list_value = $repo_list->updateCache();
+// 		var_dump($repo_list_value); die;
 		
 		// archives's infos
 		foreach ($repo_list_value["archives"] as $archive)
