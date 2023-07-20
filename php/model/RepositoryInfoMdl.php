@@ -42,7 +42,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	function updateCacheRecursive ()
+	function updateCacheRecursive ($force_archive_infos=false)
 	{
 		// TODO manually check borg lock files exist
 		
@@ -58,7 +58,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		{
 			$archive_name = $archive["name"];
 			$archive_info = new ArchiveInfoMdl($this, $archive_name);
-			if(!$archive_info->isCached())
+			if($force_archive_infos || !$archive_info->isCached())
 				$archive_info->updateCache(60*60*24*7); // 1w
 		}
 	}

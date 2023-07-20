@@ -57,13 +57,19 @@ class RepositoryCtrl
 		$f3->set("archives", $archives);
 		
 		$js_data = [];
+		$archives_info = [];
 		foreach ($archives as $archive)
 		{
 			$dt = new \DateTime($archive["start"]);
 			$js_data [] = $dt->getTimestamp();
+			
+			$archive_info = new ArchiveInfoMdl($repo_info, $archive["name"]);
+			$archive_info_value = $archive_info->getValue();
+			$archives_info [ $archive["name"] ] = $archive_info_value;
 		}
 		// var_dump($js_data); die;
 		$f3->set("js_data", $js_data);
+		$f3->set("archives_info", $archives_info);
 		
 		$view = new \View();
 		echo $view->render('repository.phtml');
@@ -108,9 +114,10 @@ class RepositoryCtrl
 	
 	public static function cacheUpdateRepoGET ($f3)
 	{
+		$force_archive_infos = $f3->get("GET.force_archive_infos");
 		$repo_name = $f3->get("PARAMS.repo_name");
 		$repo_info = new RepositoryInfoMdl($repo_name);
-		$repo_info->updateCacheRecursive();
+		$repo_info->updateCacheRecursive($force_archive_infos ?? false);
 	}
 	
 }

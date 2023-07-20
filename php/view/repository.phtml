@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__.'/layout/head.phtml';
 ?>
-
+ 
 <?php
 require_once __DIR__.'/layout/header.phtml';
 ?>
@@ -10,7 +10,7 @@ require_once __DIR__.'/layout/header.phtml';
 	<main role="main" class="container">
 
 <h1> <?= $repo_label ?> </h1>
-<h2> archives </h2>
+<h2> archives ( <?= count($archives) ?> ) </h2>
 
 
 <script type="text/javascript">
@@ -26,29 +26,34 @@ var js_data = <?= json_encode($js_data) ?>
 
 
 <table class="table table-bordered my-3">
-<tr>
-	<th>name</th>
-	<th>start</th>
-</tr>
-
-<?php
-foreach ($archives as $archive)
-{
-	$dt = new DateTime($archive["start"]);
-	$start =  $dt->format("d/m/Y H:i:s");
-	?>
 	<tr>
-		<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "arch_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
-		<td><?= $start ?></td>
+		<th>name</th>
+		<th>start</th>
+		<th>duration</th>
+		<th>original size</th>
+		<th>compressed size</th>
 	</tr>
+	
 	<?php
-}
-?>
-
-<tr>
-	<th>count</th>
-	<th><?= count($archives) ?></th>
-</tr>
+	foreach ($archives as $archive)
+	{
+		$dt = new DateTime($archive["start"]);
+		$start =  $dt->format("d/m/Y H:i:s");
+		
+		$archive_info_value = $archives_info [$archive["name"]]["archives"][0];
+		date_default_timezone_set('UTC');
+		$duration = date('H:i:s', round($archive_info_value["duration"]));
+		?>
+		<tr>
+			<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "arch_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
+			<td><?= $start ?></td>
+			<td><?= $duration ?></td>
+			<td><?= ByteUnits\Binary::bytes($archive_info_value["stats"]["original_size"])->format("GiB", " ") ?></td>
+			<td><?= ByteUnits\Binary::bytes($archive_info_value["stats"]["compressed_size"])->format("GiB", " ") ?></td>
+		</tr>
+		<?php
+	}
+	?>
 </table>
 
 	</main>
