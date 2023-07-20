@@ -37,9 +37,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		$cmd = "borg info $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
-// 		var_dump($result_code, $output); die;
 		$repo = \json_decode($output, true);
-// 		var_dump($result_code, $repo); die;
 		return $repo;
 	}
 	
@@ -54,14 +52,14 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		// repo's archive list
 		$repo_list = new RepositoryListMdl($this);
 		$repo_list_value = $repo_list->updateCache();
-// 		var_dump($repo_list_value); die;
 		
 		// archives's infos
 		foreach ($repo_list_value["archives"] as $archive)
 		{
 			$archive_name = $archive["name"];
 			$archive_info = new ArchiveInfoMdl($this, $archive_name);
-			$archive_info->updateCache(60*60*24*7);
+			if(!$archive_info->isCached())
+				$archive_info->updateCache(60*60*24*7); // 1w
 		}
 	}
 	

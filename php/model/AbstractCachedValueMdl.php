@@ -11,13 +11,23 @@ abstract class AbstractCachedValueMdl
 	abstract protected function calculateValue ();
 	
 	
+	public function isCached ()
+	{
+		$f3 = \Base::instance();
+		$cache = \Cache::instance();
+		
+		$value = $cache->get($this->getCacheKey());
+		return($value !== false);
+	}
+	
+	
 	public function getValue()
 	{
 		$f3 = \Base::instance();
 		$cache = \Cache::instance();
 		
 		$repo_infos = $cache->get($this->getCacheKey());
-		if($repo_infos == false)
+		if($repo_infos === false)
 			$repo_infos = $this->updateCache();
 		return $repo_infos;
 	}

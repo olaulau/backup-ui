@@ -31,9 +31,7 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 		$cmd = "borg list $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
-// 		var_dump($result_code, $output);
 		$archives_list = \json_decode($output, true);
-// 		var_dump($result_code, $archives_list);
 		return $archives_list;
 	}
 	

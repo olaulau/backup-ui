@@ -38,7 +38,6 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
 		$archive_infos = \json_decode($output, true);
-// 		var_dump($result_code, $archive_infos);
 		return $archive_infos;
 	}
 	
