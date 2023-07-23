@@ -15,10 +15,10 @@ require_once __DIR__.'/layout/header.phtml';
 		
 		<table class="table table-bordered my-3">
 			<tr>
-				<th>name</th>
-				<th>size</th>
-				<th># of archives</th>
-				<th>last archive</th>
+				<th class="text-center">name</th>
+				<th class="text-center">size</th>
+				<th class="text-center"># of archives</th>
+				<th class="text-center">last archive</th>
 			</tr>
 
 <?php
@@ -59,7 +59,7 @@ foreach ($data as $name => $row)
 ?>
 
 				<tr>
-					<th>sum</th>
+					<th class="text-end"> TOTAL </th>
 					<th><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
 					<th> &nbsp; </th>
 					<th> &nbsp; </th>
