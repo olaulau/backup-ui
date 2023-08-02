@@ -7,6 +7,13 @@ require_once __DIR__.'/layout/head.phtml';
 require_once __DIR__.'/layout/header.phtml';
 ?>
 
+	<script>
+        function autoRefresh() {
+            window.location = window.location.href;
+        }
+        setInterval('autoRefresh()', 10*60*1000); // refresh every 10 minutes
+    </script>
+
 	<!-- Begin page content -->
 	<main role="main" class="container">
 
