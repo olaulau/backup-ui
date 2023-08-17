@@ -54,6 +54,7 @@ class RepositoryCtrl
 		$repo_list_value = $repo_list->getValue();
 		
 		$archives = array_reverse($repo_list_value["archives"]);
+// 		var_dump($archives); die;
 		$f3->set("archives", $archives);
 		
 		$js_data = [];
@@ -67,7 +68,8 @@ class RepositoryCtrl
 			$archive_info_value = $archive_info->getValue();
 			$archives_info [ $archive["name"] ] = $archive_info_value;
 		}
-		// var_dump($js_data); die;
+// 		var_dump($archives_info); die;
+// 		var_dump($js_data); die;
 		$f3->set("js_data", $js_data);
 		$f3->set("archives_info", $archives_info);
 		
