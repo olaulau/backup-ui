@@ -35,7 +35,7 @@ borgmatic --config $config_file check  --verbosity 1 --progress
 borgmatic --config $config_file list
 borgmatic --config $config_file info
 
-ssh $remote_user_name@$server_name "chmod -R u+rwx,g+rwxs,o-rwx /home/$remote_user_name/borg/"
+ssh $remote_user_name@$server_name "chmod -R u+rwx,g+rwxs,o-rwx /home/$remote_user_name/borg/$remote_user_name/"
 
 url="https://$server_name/borg-ui/cache/update/$repo_name"
 curl $url

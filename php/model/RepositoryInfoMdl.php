@@ -21,7 +21,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	
 	public function getLocation ()
 	{
-		return $location = "/home/$this->repo_name/borg/";
+		return $location = "/home/$this->repo_name/borg/$this->repo_name/";
 	}
 	
 
