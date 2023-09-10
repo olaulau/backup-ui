@@ -28,7 +28,7 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 	function calculateValue ()
 	{
 		$location = $this->getRepoInfo()->getLocation();
-		$cmd = "borg list $location --json 2>&1";
+		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes borg list $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
 		$archives_list = \json_decode($output, true);

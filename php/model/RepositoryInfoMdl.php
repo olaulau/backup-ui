@@ -34,9 +34,10 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	function calculateValue ()
 	{
 		$location = $this->getLocation();
-		$cmd = "borg info $location --json 2>&1";
+		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
+// 		var_dump($output); die;
 		$repo = \json_decode($output, true);
 		return $repo;
 	}
