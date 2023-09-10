@@ -34,9 +34,10 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 	function calculateValue ()
 	{
 		$location = $this->getRepoInfo()->getLocation();
-		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes borg info $location::$this->archive_name --json 2>&1";
+		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location::$this->archive_name --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
+		// var_dump($output); die;
 		$archive_infos = \json_decode($output, true);
 		return $archive_infos;
 	}
