@@ -9,8 +9,9 @@ require_once __DIR__.'/layout/header.phtml';
 	<!-- Begin page content -->
 	<main role="main" class="container">
 
-<h1> <?= $repo_label ?> </h1>
-<h2> archives ( <?= count($archives) ?> ) </h2>
+<h1><?= $HOST ?></h1>
+<h2> <?= $repo_label ?> </h2>
+<h3> archives ( <?= count($archives) ?> ) </h3>
 
 
 <script type="text/javascript">
@@ -48,7 +49,7 @@ var js_data = <?= json_encode($js_data) ?>
 			$duration = date('H:i:s', round($archive_info_value["duration"]));
 			?>
 			<tr>
-				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "arch_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
+				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
 				<td><?= $start ?></td>
 				<td><?= $duration ?></td>
 				<td><?= ByteUnits\Binary::bytes($archive_info_value["stats"]["original_size"])->format("GiB", " ") ?></td>
@@ -60,7 +61,7 @@ var js_data = <?= json_encode($js_data) ?>
 		{ // rare case when repo cached info references a non existing archive (could happen when archive cache expires and no backup from a long time)
 			?>
 			<tr>
-				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "arch_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
+				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
 				<td><?= $start ?></td>
 				<td></td>
 				<td></td>

@@ -1,6 +1,9 @@
 #!/bin/bash
 
 exec > >(tee -a /home/laulau/.tmp/borg-ui_DEV.log) 2>&1
+echo ""
+echo ""
+echo "--------------------------"
 date
 
 PROJECT_DIR=`dirname "${0%/*}"`
@@ -16,7 +19,7 @@ do
 	time rsync \
 	--verbose --progress --itemize-changes --stats \
 	--recursive --times --delete \
-	--exclude-from ~/.gitignore --exclude .git --exclude tmp --exclude conf/conf.ini \
+	--exclude-from ~/.gitignore --exclude .git --exclude tmp \
 	-e "ssh -p $DEST_PORT" "$SRC" "$dest"
 	echo "after" >&2
 	
@@ -25,3 +28,4 @@ do
 done
 
 rm -rf /home/laulau/.tmp/borg-ui_DEV.lock
+date

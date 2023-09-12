@@ -5,6 +5,7 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 {
 	
 	private RepositoryInfoMdl $repo_info;
+	private string $archive_name;
 	
 	
 	public function __construct ($repo_info, $archive_name)
@@ -27,7 +28,7 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 	
 	function getCacheKey ()
 	{
-		return $cache_key = "repo(" . $this->repo_info->getRepoName() . ")-archive($this->archive_name)-info";
+		return $cache_key = "repo(" . $this->repo_info->getUserName() . "-". $this->repo_info->getRepoName() . ")-archive($this->archive_name)-info";
 	}
 	
 	

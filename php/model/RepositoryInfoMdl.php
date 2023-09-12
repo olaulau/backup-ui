@@ -4,15 +4,22 @@ namespace model;
 class RepositoryInfoMdl extends AbstractCachedValueMdl
 {
 	
-	private $repo_name;
+	private string $user_name;
+	private string $repo_name;
 	
 	
-	public function __construct ($repo_name)
+	public function __construct ($user_name, $repo_name)
 	{
+		$this->user_name = $user_name;
 		$this->repo_name = $repo_name;
 	}
 	
 	
+	public function getUserName ()
+	{
+		return $this->user_name;
+	}
+
 	public function getRepoName ()
 	{
 		return $this->repo_name;
@@ -21,13 +28,14 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	
 	public function getLocation ()
 	{
-		return $location = "/home/$this->repo_name/borg/$this->repo_name/";
+		return $location = "/home/$this->user_name/borg/$this->repo_name/";
 	}
 	
 
 	function getCacheKey ()
 	{
-		return $cache_key = "repo($this->repo_name)-info";
+		$cache_key = "repo($this->repo_name-$this->repo_name)-info";
+		return $cache_key;
 	}
 	
 	
