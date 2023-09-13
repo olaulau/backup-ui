@@ -3,6 +3,10 @@ location:
         - /PATH
     repositories:
         - ssh://USER@HOST/home/USER_NAME/borg/REP_NAME/
+
+    (pour les installation spécifiques comme synology)
+    remote_path: /usr/local/bin/borg
+
 storage:
     relocated_repo_access_is_ok: true
 
@@ -23,6 +27,8 @@ retention:
 
 consistency:
     checks:
+        - name: disabled
+
         - name: repository
           frequency: 1 month
 
