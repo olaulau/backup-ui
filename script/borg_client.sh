@@ -38,9 +38,9 @@ borgmatic --config $config_file info
 ssh $user_name@$server_name 'chmod -R 2770 $HOME/borg/$repo_name/'
 
 url="$server_name/borg-ui/cache/update/$user_name/$repo_name"
-curl $url
+curl -L $url
 url="$server_name/borg-ui_DEV/cache/update/$user_name/$repo_name"
-curl $url
+curl -L $url
 
 echo "end : `date`"
 
