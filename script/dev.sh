@@ -12,14 +12,16 @@ PROJECT_DIR=`dirname "${0%/*}"`
 cd $PROJECT_DIR
 source script/dev.conf.sh
 
-for dest in "${DESTS[@]}"
+for i in "${!DESTS[@]}"
 do
-	echo "DEST: $dest"
+	dest=${DESTS[i]}
+	port=${PORTS[i]}
+	echo "DEST: $dest : $port"
 	time rsync \
 	--verbose --progress --itemize-changes --stats \
 	--recursive --times --delete \
 	--exclude-from ~/.gitignore --exclude .git --exclude tmp --exclude-from ./.gitignore --exclude vendor  \
-	-e "ssh -p $DEST_PORT" "$SRC" "$dest"
+	-e "ssh -p $port" "$SRC" "$dest"
 done
 
 rm -rf /home/laulau/.tmp/borg-ui_DEV.lock
