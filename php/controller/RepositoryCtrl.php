@@ -30,14 +30,21 @@ class RepositoryCtrl
 		{
 			foreach ($user as $repo_name => $repo_label)
 			{
-				$count ++;
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
 				$repo_info_value = $repo_info->getValue();
-				// var_dump($repo_info_value); die;
 				$data [$user_name] [$repo_name] ["info"] = $repo_info_value;
+				
 				$repo_list = new RepositoryListMdl($repo_info);
 				$repo_list_value = $repo_list->getValue();
 				$data [$user_name] [$repo_name] ["list"] = $repo_list_value;
+				
+				$archives = $repo_list_value ["archives"];
+				$last_archive = $archives[array_key_last($archives)];
+				$last_archive_name = $last_archive ["name"];
+				$last_archive = (new ArchiveInfoMdl($repo_info, $last_archive_name))->getValue();
+				$data [$user_name] [$repo_name] ["last_archive"] = $last_archive;
+				
+				$count ++;
 			}
 		}
 		$f3->set("data", $data);

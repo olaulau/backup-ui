@@ -25,7 +25,7 @@ require_once __DIR__.'/layout/header.phtml';
 				<th class="text-center">name</th>
 				<th class="text-center">size</th>
 				<th class="text-center"># of archives</th>
-				<th class="text-center">last archive</th>
+				<th class="text-center">last archive date (original size)</th>
 			</tr>
 
 <?php
@@ -42,15 +42,29 @@ foreach ($data as $user_name => $user)
 			{
 				$size = $repo ["info"] ["cache"] ["stats"] ["unique_csize"];
 				$total_size += $size;
-				
-				$dt = new DateTime($repo ["list"] ["archives"][array_key_last($repo ["list"] ["archives"])]["start"]);
-				$start =  $dt->format("d/m/Y H:i:s");
 				?>
 				<td><a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"><?= $repo_label ?></a></td>
 				<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
 				<td><?= count($repo ["list"] ["archives"]) ?></td>
-				<td><?= $start ?></td>
+
 				<?php
+				$last_archive = $repo ["last_archive"];
+				if(!empty($last_archive))
+				{
+					$start = $last_archive ["archives"] [0] ["start"];
+					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
+					$dt = new DateTime($start);
+					$start = $dt->format("d/m/Y H:i:s");
+					?>
+					<td><?= $start ?> (<?= ByteUnits\Binary::bytes($original_size)->format("GiB", " ") ?>)</td>
+					<?php
+				}
+				else
+				{
+					?>
+					<td>&nbsp;</td>
+					<?php
+				}
 			}
 			else
 			{ // cache return empty value, so even calculation failed. will be fixed only when cache is correctly filled
