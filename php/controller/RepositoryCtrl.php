@@ -25,10 +25,12 @@ class RepositoryCtrl
 		$repos = $f3->get("conf.repos");
 
 		$data = [];
+		$count = 0;
 		foreach ($repos as $user_name => $user)
 		{
 			foreach ($user as $repo_name => $repo_label)
 			{
+				$count ++;
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
 				$repo_info_value = $repo_info->getValue();
 				// var_dump($repo_info_value); die;
@@ -39,6 +41,7 @@ class RepositoryCtrl
 			}
 		}
 		$f3->set("data", $data);
+		$f3->set("count", $count);
 		
 		$view = new \View();
 		echo $view->render('repositories.phtml');
