@@ -24,7 +24,6 @@ class RepositoryCtrl
 	{
 		$repos = $f3->get("conf.repos");
 
-		$error_string = "";
 		$data = [];
 		foreach ($repos as $user_name => $user)
 		{
@@ -32,6 +31,7 @@ class RepositoryCtrl
 			{
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
 				$repo_info_value = $repo_info->getValue();
+				// var_dump($repo_info_value); die;
 				$data [$user_name] [$repo_name] ["info"] = $repo_info_value;
 				$repo_list = new RepositoryListMdl($repo_info);
 				$repo_list_value = $repo_list->getValue();
@@ -92,16 +92,12 @@ class RepositoryCtrl
 		$arch_info_value = $arch_info->getValue();
 		
 		echo "<pre>";
+		ini_set('xdebug.var_display_max_depth', 10);
+		ini_set('xdebug.var_display_max_children', 256);
+		ini_set('xdebug.var_display_max_data', 1024);
 		var_dump($arch_info_value);
 		echo "</pre>";
 		die;
-		/////////////////////
-		
-		
-		$f3->set("archive", $arch_info_value);
-		
-		$view = new \View();
-		echo $view->render('repository.phtml');
 	}
 	
 	

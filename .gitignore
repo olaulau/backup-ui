@@ -1,4 +1,5 @@
 /vendor/
 /node_modules/
+/tmp
 /script/dev.conf.sh
 /conf/conf.ini

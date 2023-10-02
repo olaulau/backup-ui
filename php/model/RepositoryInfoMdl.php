@@ -28,13 +28,16 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	
 	public function getLocation ()
 	{
-		return $location = "/home/$this->user_name/borg/$this->repo_name/";
+		$f3 = \Base::instance();
+
+		$home_prefix = $f3->get("conf.home_prefix");
+		return $location = "$home_prefix/$this->user_name/borg/$this->repo_name/";
 	}
 	
 
 	function getCacheKey ()
 	{
-		$cache_key = "repo($this->repo_name-$this->repo_name)-info";
+		$cache_key = "repo($this->user_name-$this->repo_name)-info";
 		return $cache_key;
 	}
 	
@@ -45,7 +48,6 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
-		// var_dump($output); die;
 		$repo = \json_decode($output, true);
 		return $repo;
 	}

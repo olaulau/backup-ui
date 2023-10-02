@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## usage :
-## ~/bin/borg_client.sh <server_name> <repo_name>
+## ~/bin/borg_client.sh <server_name> <user_name> <repo_name>
 
 echo "-----------------------"
 echo "begin : `date`"
@@ -35,11 +35,11 @@ borgmatic --config $config_file check  --verbosity 1 --progress
 borgmatic --config $config_file list
 borgmatic --config $config_file info
 
-ssh $user_name@$server_name "chmod -R u+rwx,g+rwxs,o-rwx /home/$user_name/borg/$repo_name/"
+ssh $user_name@$server_name 'chmod -R 2770 $HOME/borg/$repo_name/'
 
-url="https://$server_name/borg-ui/cache/update/$user_name/$repo_name"
+url="$server_name/borg-ui/cache/update/$user_name/$repo_name"
 curl $url
-url="https://$server_name/borg-ui_DEV/cache/update/$user_name/$repo_name"
+url="$server_name/borg-ui_DEV/cache/update/$user_name/$repo_name"
 curl $url
 
 echo "end : `date`"

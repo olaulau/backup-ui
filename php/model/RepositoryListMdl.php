@@ -31,7 +31,6 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg list $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
-		// var_dump($output); die;
 		$archives_list = \json_decode($output, true);
 		return $archives_list;
 	}
