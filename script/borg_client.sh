@@ -32,8 +32,8 @@ borgmatic --config $config_file create --verbosity 1 --list --stats
 borgmatic --config $config_file prune  --verbosity 1 --list --stats
 borgmatic --config $config_file check  --verbosity 1 --progress
 
-borgmatic --config $config_file list
-borgmatic --config $config_file info
+#borgmatic --config $config_file list
+#borgmatic --config $config_file info
 
 ssh $user_name@$server_name 'chmod -R 2770 $HOME/borg/$repo_name/'
 
@@ -43,6 +43,5 @@ url="$server_name/borg-ui_DEV/cache/update/$user_name/$repo_name"
 curl -L $url
 
 echo "end : `date`"
-
 echo ""
 echo ""
