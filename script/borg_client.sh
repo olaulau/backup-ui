@@ -28,8 +28,8 @@ config_file=`realpath ~/.config/borgmatic/borgmatic_$server_name.yaml`
 #validate-borgmatic-config --config $config_file
 #borgmatic --config $config_file rcreate --encryption none
 
-borgmatic --config $config_file create --verbosity 1 --list --stats
 borgmatic --config $config_file prune  --verbosity 1 --list --stats
+borgmatic --config $config_file create --verbosity 1 --list --stats
 borgmatic --config $config_file check  --verbosity 1 --progress
 
 #borgmatic --config $config_file list
