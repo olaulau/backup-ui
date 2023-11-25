@@ -1,6 +1,8 @@
 <?php
 namespace model;
 
+use ErrorException;
+
 class RepositoryInfoMdl extends AbstractCachedValueMdl
 {
 	
@@ -49,6 +51,10 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
 		$repo = \json_decode($output, true);
+		$json_error = json_last_error();
+		if($json_error !== JSON_ERROR_NONE) {
+			throw new ErrorException($output);
+		}
 		return $repo;
 	}
 	

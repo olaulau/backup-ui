@@ -1,6 +1,8 @@
 <?php
 namespace model;
 
+use ErrorException;
+
 class RepositoryListMdl extends AbstractCachedValueMdl
 {
 	
@@ -32,6 +34,10 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 		\exec($cmd, $output, $result_code);
 		$output = \implode(PHP_EOL, $output);
 		$archives_list = \json_decode($output, true);
+		$json_error = json_last_error();
+		if($json_error !== JSON_ERROR_NONE) {
+			throw new ErrorException($output);
+		}
 		return $archives_list;
 	}
 	
