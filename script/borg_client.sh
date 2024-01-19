@@ -23,7 +23,7 @@ fi
 server_name="$1"
 user_name="$2"
 repo_name="$3"
-config_file=`realpath ~/.config/borgmatic/borgmatic_$server_name_$user_name_$repo_name.yaml`
+config_file=`realpath ~/.config/borgmatic/borgmatic_${server_name}_${user_name}_${repo_name}.yaml`
 
 #borgmatic config validate --config $config_file
 #borgmatic --config $config_file rcreate --encryption none
@@ -37,7 +37,7 @@ borgmatic --config $config_file check	--verbosity 1 --progress
 #borgmatic --config $config_file info
 #borgmatic --config $config_file info --archive latest --json
 
-ssh $user_name@$server_name 'chmod -R 2770 $HOME/borg/$repo_name/'
+ssh $user_name@$server_name "chmod -R 2770 ~/borg/$repo_name/"
 
 # query borg-ui so that it caches repo values
 url="$server_name/borg-ui/cache/update/$user_name/$repo_name"
