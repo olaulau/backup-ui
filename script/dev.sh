@@ -1,7 +1,7 @@
 #!/bin/bash
 
-exec > >(tee -a /home/laulau/.tmp/borg-ui_DEV.log) 2>&1
-mkdir /home/laulau/.tmp/borg-ui_DEV.lock || exit 0
+exec > >(tee -a $HOME/.tmp/borg-ui_DEV.log) 2>&1
+mkdir $HOME/.tmp/borg-ui_DEV.lock || exit 0
 
 echo ""
 echo ""

@@ -22,16 +22,18 @@ require_once __DIR__.'/layout/header.phtml';
 		
 		<table class="table table-bordered my-3">
 			<tr>
-				<th class="text-center">name</th>
-				<th class="text-center">size</th>
+				<th class="text-center">unix user</th>
+				<th class="text-center">repo name</th>
+				<th class="text-center">repo size</th>
 				<th class="text-center"># of archives</th>
-				<th class="text-center">last archive date (original size)</th>
+				<th class="text-center">last archive : date time (original size)</th>
 			</tr>
 
 <?php
 $total_size = 0;
 foreach ($data as $user_name => $user)
 {
+	$cpt_repo = 1;
 	foreach ($user as $repo_name => $repo)
 	{
 		$repo_label = $conf ["repos"] [$user_name] [$repo_name];
@@ -42,8 +44,13 @@ foreach ($data as $user_name => $user)
 			{
 				$size = $repo ["info"] ["cache"] ["stats"] ["unique_csize"];
 				$total_size += $size;
+				if ($cpt_repo === 1) {
+					?>
+					<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
+					<?php
+				}
 				?>
-				<td><a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"><?= $repo_label ?></a></td>
+				<td><a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a></td>
 				<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
 				<td><?= count($repo ["list"] ["archives"]) ?></td>
 
@@ -69,6 +76,7 @@ foreach ($data as $user_name => $user)
 			else
 			{ // cache return empty value, so even calculation failed. will be fixed only when cache is correctly filled
 				?>
+				<td><?= $user_name ?></td>
 				<td><?= $repo_label ?></td>
 				<td> &nbsp; </td>
 				<td> &nbsp; </td>
@@ -78,15 +86,14 @@ foreach ($data as $user_name => $user)
 			?>
 		</tr>
 		<?php
+		$cpt_repo ++;
 	}
 }
 ?>
 
 				<tr>
-					<th class="text-end"> TOTAL </th>
-					<th><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
-					<th> &nbsp; </th>
-					<th> &nbsp; </th>
+					<th colspan="2" class="text-end"> TOTAL </th>
+					<th colspan="3"><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
 				</tr>
 		</table>
 
