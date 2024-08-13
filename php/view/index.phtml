@@ -8,7 +8,8 @@ require_once __DIR__.'/layout/header.phtml';
 
 	<!-- Begin page content -->
 	<main role="main" class="container">
-		<h1 class="mt-5"><?= $conf["hostname_override"] ?? $HOST ?></h1>
+		<h1> <?= $page ["title"] ?> </h1>
+		
 		<h2 class="mt-5"><a href="<?= $BASE . $f3->alias("repositories") ?>">repositories</a></h2>
 	</main>
 

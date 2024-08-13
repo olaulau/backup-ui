@@ -49,6 +49,19 @@ class RepositoryCtrl
 		$f3->set("data", $data);
 		$f3->set("count", $count);
 		
+		$page ["title"] = "repositories ({$count})";
+		$page ["breadcrumbs"] = [
+			[
+				"label"	=> $f3->get("conf.hostname_override") ?? $f3->get("HOST"),
+				"url"	=> null,
+			],
+			[
+				"label"	=> "repositories",
+				"url"	=> $f3->get("BASE") . $f3->alias("repositories"),
+			],
+		];
+		$f3->set("page", $page);
+		
 		$view = new \View();
 		echo $view->render('repositories.phtml');
 	}
@@ -82,6 +95,27 @@ class RepositoryCtrl
 		}
 		$f3->set("js_data", $js_data);
 		$f3->set("archives_info", $archives_info);
+		
+		$page ["title"] = "archives ( ".count($archives_info) ." )";
+		$page ["breadcrumbs"] = [
+			[
+				"label"	=> $f3->get("conf.hostname_override") ?? $f3->get("HOST"),
+				"url"	=> null,
+			],
+			[
+				"label"	=> "repositories",
+				"url"	=> $f3->get("BASE") . $f3->alias("repositories"),
+			],
+			[
+				"label"	=> $user_label,
+				"url"	=> null,
+			],
+			[
+				"label"	=> $repo_label,
+				"url"	=> $f3->get("BASE") . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name]),
+			],
+		];
+		$f3->set("page", $page);
 		
 		$view = new \View();
 		echo $view->render('repository.phtml');
