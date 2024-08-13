@@ -3,6 +3,7 @@ namespace model;
 
 use ErrorException;
 
+
 class ArchiveInfoMdl extends AbstractCachedValueMdl
 {
 	
@@ -28,13 +29,19 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	function getCacheKey ()
+	/**
+	 * @implements AbstractCachedValueMdl
+	 */
+	function getCacheKey () : string
 	{
 		return $cache_key = "repo(" . $this->repo_info->getUserName() . "-". $this->repo_info->getRepoName() . ")-archive($this->archive_name)-info";
 	}
 	
 	
-	function calculateValue ()
+	/**
+	 * @implements AbstractCachedValueMdl
+	 */
+	function calculateValue () : mixed
 	{
 		$location = $this->getRepoInfo()->getLocation();
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location::$this->archive_name --json 2>&1";

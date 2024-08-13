@@ -1,19 +1,26 @@
 <?php
 namespace model;
 
+
 abstract class AbstractCachedValueMdl
-// 	extends Mdl
 {
+	/**
+	 * this method has to be implemented, and gives the cache key
+	 */
+	abstract protected function getCacheKey () : string;
 	
-	abstract protected function getCacheKey ();
+	
+	/**
+	 * this method has to be implemented, and gives the value the cache should store
+	 */
+	abstract protected function calculateValue () : mixed;
 	
 	
-	abstract protected function calculateValue ();
-	
-	
-	public function isCached ()
+	/**
+	 * indicate if the entity is present in cache
+	 */
+	public function isCached () : bool
 	{
-		$f3 = \Base::instance();
 		$cache = \Cache::instance();
 		
 		$value = $cache->get($this->getCacheKey());
@@ -21,27 +28,50 @@ abstract class AbstractCachedValueMdl
 	}
 	
 	
-	public function getValue()
+	/**
+	 * get value from cache only
+	 */
+	public function getValueFromCache () : mixed
 	{
-		$f3 = \Base::instance();
 		$cache = \Cache::instance();
 		
-		$repo_infos = $cache->get($this->getCacheKey());
-		if($repo_infos === false)
-			$repo_infos = $this->updateCache();
-		return $repo_infos;
+		$value = $cache->get($this->getCacheKey());
+		return $value;
+	}
+	
+	/**
+	 * get value from cache, or by calculating it if needed (and updating the cache)
+	 */
+	public function getValue() : mixed
+	{
+		$value = $this->getValueFromCache();
+		if($value === false)
+			$value = $this->updateCache();
+		return $value;
 	}
 	
 	
-	public function updateCache ($ttl=0)
+	/**
+	 * update cache with the value calculated
+	 */
+	public function updateCache ($ttl=0) : mixed
 	{
-		$f3 = \Base::instance();
 		$cache = \Cache::instance();
 		
 		$value = $this->calculateValue();
 		if(!empty($value))
 			$cache->set($this->getCacheKey(), $value, $ttl);
 		return $value;
+	}
+	
+	
+	/**
+	 * remove entry from cache
+	 */
+	public function removeFromCache () : void
+	{
+		$cache = \Cache::instance();
+		$cache->clear($this->getCacheKey());
 	}
 	
 }

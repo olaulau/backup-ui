@@ -3,6 +3,7 @@ namespace model;
 
 use ErrorException;
 
+
 class RepositoryInfoMdl extends AbstractCachedValueMdl
 {
 	
@@ -17,18 +18,18 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	public function getUserName ()
+	public function getUserName () : string
 	{
 		return $this->user_name;
 	}
 
-	public function getRepoName ()
+	public function getRepoName () : string
 	{
 		return $this->repo_name;
 	}
 	
 	
-	public function getLocation ()
+	public function getLocation () : string
 	{
 		$f3 = \Base::instance();
 
@@ -36,15 +37,20 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		return $location = "$home_prefix/$this->user_name/borg/$this->repo_name/";
 	}
 	
-
-	function getCacheKey ()
+	
+	/**
+	 * @implements AbstractCachedValueMdl
+	 */
+	function getCacheKey () : string
 	{
 		$cache_key = "repo($this->user_name-$this->repo_name)-info";
 		return $cache_key;
 	}
 	
-	
-	function calculateValue ()
+	/**
+	 * @implements AbstractCachedValueMdl
+	 */
+	function calculateValue () : mixed
 	{
 		$location = $this->getLocation();
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
@@ -59,7 +65,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	function updateCacheRecursive ($force_archive_infos=false)
+	function updateCacheRecursive ($force_archive_infos=false) : void
 	{
 		// TODO manually check borg lock files exist
 		
@@ -68,17 +74,28 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		
 		// repo's archive list
 		$repo_list = new RepositoryListMdl($this);
+		$old_repo_list_value = $repo_list->getValueFromCache();
 		$repo_list_value = $repo_list->updateCache();
 		
+		// remove deleted archives
+		if(!empty($old_repo_list_value)) {
+			$old_archives_list = array_column($old_repo_list_value ["archives"], "archive");
+			$archives_list = array_column($repo_list_value ["archives"], "archive");
+			$archives_to_remove = array_diff($old_archives_list, $archives_list);
+			foreach($archives_to_remove as $archive_name) {
+				$archive_info = new ArchiveInfoMdl($this, $archive_name);
+				$archive_info->removeFromCache ();
+			}
+		}
+		
 		// archives's infos
-		if(!empty($repo_list_value))
-		{
-			foreach ($repo_list_value["archives"] as $archive)
-			{
+		if(!empty($repo_list_value)) {
+			foreach ($repo_list_value["archives"] as $archive) {
 				$archive_name = $archive["name"];
 				$archive_info = new ArchiveInfoMdl($this, $archive_name);
-				if($force_archive_infos || !$archive_info->isCached())
-					$archive_info->updateCache(60*60*24*7); // 1w
+				if($force_archive_infos || !$archive_info->isCached()) {
+					$archive_info->updateCache();
+				}
 			}
 		}
 	}
