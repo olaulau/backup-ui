@@ -10,6 +10,7 @@ require_once __DIR__.'/layout/header.phtml';
 	<main role="main" class="container">
 
 		<h1><?= $conf["hostname_override"] ?? $HOST ?></h1>
+		<h2> <?= $user_label ?> </h2>
 		<h2> <?= $repo_label ?> </h2>
 		<h3> archives ( <?= count($archives) ?> ) </h3>
 

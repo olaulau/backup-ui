@@ -5,6 +5,7 @@ use model\ArchiveInfoMdl;
 use model\RepositoryInfoMdl;
 use model\RepositoryListMdl;
 
+
 class RepositoryCtrl
 {
 
@@ -26,10 +27,8 @@ class RepositoryCtrl
 
 		$data = [];
 		$count = 0;
-		foreach ($repos as $user_name => $user)
-		{
-			foreach ($user as $repo_name => $repo_label)
-			{
+		foreach ($repos as $user_name => $user) {
+			foreach ($user as $repo_name => $repo_label) {
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
 				$repo_info_value = $repo_info->getValue();
 				$data [$user_name] [$repo_name] ["info"] = $repo_info_value;
@@ -58,8 +57,9 @@ class RepositoryCtrl
 	public static function viewGET ($f3)
 	{
 		$user_name = $f3->get("PARAMS.user_name");
+		$user_label = $f3->get("conf.users.$user_name");
+		$f3->set("user_label", $user_label);
 		$repo_name = $f3->get("PARAMS.repo_name");
-		$f3->set("repo_name", $repo_name);
 		$repo_label = $f3->get("conf.repos.$user_name.$repo_name");
 		$f3->set("repo_label", $repo_label);
 		
@@ -72,8 +72,7 @@ class RepositoryCtrl
 		
 		$js_data = [];
 		$archives_info = [];
-		foreach ($archives as $archive)
-		{
+		foreach ($archives as $archive) {
 			$dt = new \DateTime($archive["start"]);
 			$js_data [] = $dt->getTimestamp();
 			
@@ -114,10 +113,8 @@ class RepositoryCtrl
 	public static function cacheUpdateGET ($f3)
 	{
 		$repos = $f3->get("conf.repos");
-		foreach ($repos as $user_name => $user)
-		{
-			foreach ($user as $repo_name => $repo_label)
-			{
+		foreach ($repos as $user_name => $user) {
+			foreach ($user as $repo_name => $repo_label) {
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
 				$repo_info->updateCacheRecursive();
 			}
