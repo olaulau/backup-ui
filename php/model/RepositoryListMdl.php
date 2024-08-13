@@ -10,7 +10,7 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 	private RepositoryInfoMdl $repo_info;
 	
 	
-	public function __construct ($repo_info)
+	public function __construct (RepositoryInfoMdl $repo_info)
 	{
 		$this->repo_info = $repo_info;
 	}

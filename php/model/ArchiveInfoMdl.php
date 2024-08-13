@@ -11,7 +11,7 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 	private string $archive_name;
 	
 	
-	public function __construct ($repo_info, $archive_name)
+	public function __construct (RepositoryInfoMdl $repo_info, string $archive_name)
 	{
 		$this->repo_info = $repo_info;
 		$this->archive_name = $archive_name;

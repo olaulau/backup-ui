@@ -11,7 +11,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	private string $repo_name;
 	
 	
-	public function __construct ($user_name, $repo_name)
+	public function __construct (string $user_name, string $repo_name)
 	{
 		$this->user_name = $user_name;
 		$this->repo_name = $repo_name;
@@ -65,10 +65,8 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	function updateCacheRecursive ($force_archive_infos=false) : void
+	function updateCacheRecursive (bool $force_archive_infos=false) : void
 	{
-		// TODO manually check borg lock files exist
-		
 		// repo infos
 		$this->updateCache();
 		
@@ -98,6 +96,12 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 				}
 			}
 		}
+	}
+	
+	
+	public function isLocked () : bool
+	{
+		return file_exists($this->getLocation() . "/" . "lock.exclusive");
 	}
 	
 }

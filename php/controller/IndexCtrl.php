@@ -1,23 +1,24 @@
 <?php
 namespace controller;
 
+use Base;
 
 class IndexCtrl
 {
 
-	public static function beforeRoute ($f3)
+	public static function beforeRoute (Base $f3) : void
 	{
 		
 	}
     
 	
-	public static function afterRoute ($f3)
+	public static function afterRoute (Base$f3) : void
 	{
 		
 	}
 
 	
-	public static function indexGET ($f3)
+	public static function indexGET (Base$f3) : void
 	{
 		$page ["title"] = $f3->get("conf.hostname_override") ?? $f3->get("HOST");
 		$page ["breadcrumbs"] = [];
@@ -28,7 +29,7 @@ class IndexCtrl
 	}
 	
 	
-	public static function testGET ($f3)
+	public static function testGET (Base$f3) : void
 	{
 		
 		die;

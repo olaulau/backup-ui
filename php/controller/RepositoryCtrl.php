@@ -1,6 +1,7 @@
 <?php
 namespace controller;
 
+use Base;
 use model\ArchiveInfoMdl;
 use model\RepositoryInfoMdl;
 use model\RepositoryListMdl;
@@ -9,19 +10,19 @@ use model\RepositoryListMdl;
 class RepositoryCtrl
 {
 
-	public static function beforeRoute ()
+	public static function beforeRoute (Base $f3) : void
 	{
 		
 	}
     
 	
-	public static function afterRoute ()
+	public static function afterRoute (Base $f3) : void
 	{
 		
 	}
 
 	
-	public static function listGET ($f3)
+	public static function listGET (Base $f3) : void
 	{
 		$repos = $f3->get("conf.repos");
 
@@ -30,24 +31,23 @@ class RepositoryCtrl
 		foreach ($repos as $user_name => $user) {
 			foreach ($user as $repo_name => $repo_label) {
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
-				$repo_info_value = $repo_info->getValue();
+				$repo_info_value = $repo_info->getValueFromCache();
 				$data [$user_name] [$repo_name] ["info"] = $repo_info_value;
 				
 				$repo_list = new RepositoryListMdl($repo_info);
-				$repo_list_value = $repo_list->getValue();
+				$repo_list_value = $repo_list->getValueFromCache();
 				$data [$user_name] [$repo_name] ["list"] = $repo_list_value;
 				
 				$archives = $repo_list_value ["archives"];
 				$last_archive = $archives[array_key_last($archives)];
 				$last_archive_name = $last_archive ["name"];
-				$last_archive = (new ArchiveInfoMdl($repo_info, $last_archive_name))->getValue();
+				$last_archive = (new ArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
 				$data [$user_name] [$repo_name] ["last_archive"] = $last_archive;
 				
 				$count ++;
 			}
 		}
 		$f3->set("data", $data);
-		$f3->set("count", $count);
 		
 		$page ["title"] = "repositories ({$count})";
 		$page ["breadcrumbs"] = [
@@ -67,12 +67,13 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function viewGET ($f3)
+	public static function viewGET (Base $f3) : void
 	{
 		$user_name = $f3->get("PARAMS.user_name");
 		$user_label = $f3->get("conf.users.$user_name");
 		$f3->set("user_label", $user_label);
 		$repo_name = $f3->get("PARAMS.repo_name");
+		$f3->set("repo_name", $repo_name);
 		$repo_label = $f3->get("conf.repos.$user_name.$repo_name");
 		$f3->set("repo_label", $repo_label);
 		
@@ -122,7 +123,7 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function archiveGET ($f3)
+	public static function archiveGET (Base $f3) : void
 	{
 		$user_name = $f3->get("PARAMS.user_name");
 		$repo_name = $f3->get("PARAMS.repo_name");
@@ -144,7 +145,7 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cacheUpdateGET ($f3)
+	public static function cacheUpdateGET (Base $f3) : void
 	{
 		$repos = $f3->get("conf.repos");
 		foreach ($repos as $user_name => $user) {
@@ -156,7 +157,7 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cacheUpdateRepoGET ($f3)
+	public static function cacheUpdateRepoGET (Base $f3) : void
 	{
 		$force_archive_infos = $f3->get("GET.force_archive_infos");
 		$user_name = $f3->get("PARAMS.user_name");

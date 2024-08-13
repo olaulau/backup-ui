@@ -31,7 +31,7 @@ abstract class AbstractCachedValueMdl
 	/**
 	 * get value from cache only
 	 */
-	public function getValueFromCache () : mixed
+	public function getValueFromCache ()/* : mixed*/
 	{
 		$cache = \Cache::instance();
 		
@@ -42,7 +42,7 @@ abstract class AbstractCachedValueMdl
 	/**
 	 * get value from cache, or by calculating it if needed (and updating the cache)
 	 */
-	public function getValue() : mixed
+	public function getValue()/* : mixed*/
 	{
 		$value = $this->getValueFromCache();
 		if($value === false)
@@ -54,7 +54,7 @@ abstract class AbstractCachedValueMdl
 	/**
 	 * update cache with the value calculated
 	 */
-	public function updateCache ($ttl=0) : mixed
+	public function updateCache (int $ttl=0)/* : mixed*/
 	{
 		$cache = \Cache::instance();
 		
