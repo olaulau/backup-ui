@@ -22,4 +22,11 @@ class IndexCtrl
 		echo $view->render('index.phtml');
 	}
 	
+	
+	public static function testGET ()
+	{
+		
+		die;
+	}
+	
 }
