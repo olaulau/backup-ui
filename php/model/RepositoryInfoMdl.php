@@ -50,7 +50,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	/**
 	 * @implements AbstractCachedValueMdl
 	 */
-	function calculateValue () : mixed
+	function calculateValue ()/* : mixed*/
 	{
 		$location = $this->getLocation();
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";

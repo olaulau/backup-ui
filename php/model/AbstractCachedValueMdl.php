@@ -13,7 +13,7 @@ abstract class AbstractCachedValueMdl
 	/**
 	 * this method has to be implemented, and gives the value the cache should store
 	 */
-	abstract protected function calculateValue () : mixed;
+	abstract protected function calculateValue ()/* : mixed*/;
 	
 	
 	/**
