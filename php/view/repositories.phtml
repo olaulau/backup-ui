@@ -11,7 +11,7 @@ require_once __DIR__.'/layout/header.phtml';
 		function autoRefresh() {
 			window.location = window.location.href;
 		}
-		setInterval('autoRefresh()', 10*60*1000); // refresh every 10 minutes
+		setInterval('autoRefresh()', 5*60*1000); // refresh every 5 minutes
 	</script>
 
 	<!-- Begin page content -->
@@ -30,33 +30,33 @@ require_once __DIR__.'/layout/header.phtml';
 
 <?php
 $total_size = 0;
-foreach ($data as $user_name => $user)
-{
+foreach ($data as $user_name => $user) {
 	$cpt_repo = 1;
-	foreach ($user as $repo_name => $repo)
-	{
+	foreach ($user as $repo_name => $repo) {
 		$repo_label = $conf ["repos"] [$user_name] [$repo_name];
 		?>
 		<tr>
 			<?php
-			if(!empty($repo["info"]) && !empty($repo["list"]))
-			{
+			if ($cpt_repo === 1) { // first column which can overlap many rows
+				?>
+				<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
+				<?php
+			}
+			
+			?>
+			<td><a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>" class="<?= empty($repo ["list"]) ? "text-body text-decoration-none pe-none" : "" ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a></td>
+			<?php
+			
+			if(!empty($repo ["info"]) && !empty($repo ["list"])) {
 				$size = $repo ["info"] ["cache"] ["stats"] ["unique_csize"];
 				$total_size += $size;
-				if ($cpt_repo === 1) {
-					?>
-					<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
-					<?php
-				}
 				?>
-				<td><a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a></td>
 				<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
 				<td><?= count($repo ["list"] ["archives"]) ?></td>
 
 				<?php
 				$last_archive = $repo ["last_archive"];
-				if(!empty($last_archive))
-				{
+				if(!empty($last_archive)) {
 					$start = $last_archive ["archives"] [0] ["start"];
 					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
 					$dt = new DateTime($start);
@@ -65,18 +65,14 @@ foreach ($data as $user_name => $user)
 					<td><?= $start ?> (<?= ByteUnits\Binary::bytes($original_size)->format("GiB", " ") ?>)</td>
 					<?php
 				}
-				else
-				{
+				else {
 					?>
 					<td>&nbsp;</td>
 					<?php
 				}
 			}
-			else
-			{ // cache return empty value, so even calculation failed. will be fixed only when cache is correctly filled
+			else { // cache return empty value. will be fixed only when cache is correctly filled
 				?>
-				<td><?= $user_name ?></td>
-				<td><?= $repo_label ?></td>
 				<td> &nbsp; </td>
 				<td> &nbsp; </td>
 				<td> &nbsp; </td>

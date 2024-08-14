@@ -31,6 +31,8 @@ class IndexCtrl
 	
 	public static function testGET (Base$f3) : void
 	{
+		$servers = $f3->get("conf.servers");
+		var_dump($servers);
 		
 		die;
 	}
