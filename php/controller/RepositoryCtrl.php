@@ -24,29 +24,37 @@ class RepositoryCtrl
 	
 	public static function listGET (Base $f3) : void
 	{
+		// get conf
+		$servers = $f3->get("conf.servers");
+		$f3->set("servers", $servers);
+		$users = $f3->get("conf.users");
+		$f3->set("users", $users);
 		$repos = $f3->get("conf.repos");
-
+		$f3->set("repos", $repos);
+		
 		$data = [];
-		foreach ($repos as $user_name => $user) {
-			foreach ($user as $repo_name => $repo_label) {
-				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
-				$repo_info_value = $repo_info->getValueFromCache();
-				$data [$user_name] [$repo_name] ["info"] = $repo_info_value;
-				
-				$repo_list = new RepositoryListMdl($repo_info);
-				$repo_list_value = $repo_list->getValueFromCache();
-				$data [$user_name] [$repo_name] ["list"] = $repo_list_value;
-				
-				if(!empty($repo_list_value)) {
-					$archives = $repo_list_value ["archives"];
-					$last_archive = $archives[array_key_last($archives)];
-					$last_archive_name = $last_archive ["name"];
-					$last_archive = (new ArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+		foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
+			foreach ($repos as $user_name => $user) {
+				foreach ($user as $repo_name => $repo_label) {
+					$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $server_name);
+					$repo_info_value = $repo_info->getValueFromCache();
+					$data [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
+					
+					$repo_list = new RepositoryListMdl($repo_info);
+					$repo_list_value = $repo_list->getValueFromCache();
+					$data [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
+					
+					if(!empty($repo_list_value)) {
+						$archives = $repo_list_value ["archives"];
+						$last_archive = $archives[array_key_last($archives)];
+						$last_archive_name = $last_archive ["name"];
+						$last_archive = (new ArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+					}
+					else {
+						$last_archive = null;
+					}
+					$data [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
 				}
-				else {
-					$last_archive = null;
-				}
-				$data [$user_name] [$repo_name] ["last_archive"] = $last_archive;
 			}
 		}
 		$f3->set("data", $data);

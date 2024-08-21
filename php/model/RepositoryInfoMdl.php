@@ -7,16 +7,23 @@ use ErrorException;
 class RepositoryInfoMdl extends AbstractCachedValueMdl
 {
 	
+	private string $server_name;
 	private string $user_name;
 	private string $repo_name;
 	
 	
-	public function __construct (string $user_name, string $repo_name)
+	public function __construct (string $user_name, string $repo_name, string $server_name="localhost")
 	{
+		$this->server_name = $server_name;
 		$this->user_name = $user_name;
 		$this->repo_name = $repo_name;
 	}
 	
+	
+	public function getServerName () : string
+	{
+		return $this->server_name;
+	}
 	
 	public function getUserName () : string
 	{
@@ -43,7 +50,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	 */
 	function getCacheKey () : string
 	{
-		$cache_key = "repo($this->user_name-$this->repo_name)-info";
+		$cache_key = "repo({$this->server_name}-{$this->user_name}-{$this->repo_name})-info";
 		return $cache_key;
 	}
 	
@@ -52,6 +59,9 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	 */
 	function calculateValue ()/* : mixed*/
 	{
+		if($this->server_name !== "localhost") {
+			throw new ErrorException("can't get repo infos for remote repo");
+		}
 		$location = $this->getLocation();
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
 		\exec($cmd, $output, $result_code);

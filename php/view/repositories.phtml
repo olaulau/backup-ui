@@ -1,4 +1,5 @@
 <?php
+use service\Stuff;
 
 require_once __DIR__.'/layout/head.phtml';
 ?>
@@ -13,58 +14,72 @@ require_once __DIR__.'/layout/header.phtml';
 		}
 		setInterval('autoRefresh()', 5*60*1000); // refresh every 5 minutes
 	</script>
-
+	
 	<!-- Begin page content -->
-	<main role="main" class="container">
+	<main role="main" class="container-fluid">
 
 		<h1> <?= $page ["title"] ?> </h1>
 		
-		<table class="table table-bordered my-3">
+		<table class="table table-bordered table-hover my-3">
 			<tr>
-				<th class="text-center">unix user</th>
-				<th class="text-center">repo name</th>
-				<th class="text-center">repo size</th>
+				<th colspan="2" class="text-end">server</th>
+			<?php
+			$total ["user_count"] = 0;
+			$total ["repo_count"] = 0;
+			foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
+				$total [$server_name] ["repo_size"] = 0;
+				$total [$server_name] ["archive_count"] = 0;
+				$total [$server_name] ["last_archive_datetime"] = "9999";
+				$total [$server_name] ["last_archive_original_size"] = 0;
+				?>
+				<th colspan="4" class="text-center"><a href="<?= $server_url ?>"><?= $server_label ?></a></th>
+				<?php
+			}
+			?>
+			</tr>
+			
+			<tr>
+				<th class="text-center">user</th>
+				<th class="text-center">repo</th>
+			<?php
+			foreach (array_keys($servers) as $server_name) {
+				?>
+				<th class="text-center">size (GiB)</th>
 				<th class="text-center"># archives</th>
 				<th class="text-center">last archive </th>
-				<th class="text-center">original size</th>
+				<th class="text-center">size (GiB)</th>
+				<?php
+			}
+			?>
 			</tr>
 
 <?php
-$total["user_count"] = 0;
-$total["repo_count"] = 0;
-$total["repo_size"] = 0;
-$total["archive_count"] = 0;
-$total["last_archive_datetime"] = "9999";
-$total["last_archive_original_size"] = 0;
-foreach ($data as $user_name => $user) {
-	$total["user_count"] ++;
-	$user_repo_cpt = 1;
-	foreach ($user as $repo_name => $repo) {
-		$total["repo_count"] ++;
-		$repo_label = $conf ["repos"] [$user_name] [$repo_name];
-		?>
+foreach ($repos as $user_name => $user) {
+	$user_label = $users [$user_name];
+	$total ["user_count"] ++;
+	?>
 		<tr>
-			<?php
-			if ($user_repo_cpt === 1) { // first column which can overlap many rows
-				?>
-				<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
-				<?php
-			}
-			
-			?>
+			<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
+	<?php
+	foreach ($user as $repo_name => $repo_label) {
+		$total ["repo_count"] ++;
+		$repo_label = $conf ["repos"] [$user_name] [$repo_name];
+		$repo = $data ["localhost"] [$user_name] [$repo_name]; // to make a link to the repo on this server
+		?>
 			<td>
 				<a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
 					class="<?= empty($repo ["list"]) ? "text-body text-decoration-none pe-none" : "" ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a>
 			</td>
-			<?php
-			
+		<?php
+		foreach (array_keys($servers) as $server_name) {
+			$repo = $data [$server_name] [$user_name] [$repo_name];
 			if(!empty($repo ["info"]) && !empty($repo ["list"])) {
 				$repo_size = $repo ["info"] ["cache"] ["stats"] ["unique_csize"];
-				$total["repo_size"] += $repo_size;
+				$total [$server_name] ["repo_size"] += $repo_size;
 				$archive_count = count($repo ["list"] ["archives"]);
-				$total["archive_count"] += $archive_count;
+				$total [$server_name] ["archive_count"] += $archive_count;
 				?>
-				<td class="text-end"><?= ByteUnits\Binary::bytes($repo_size)->format("GiB", " ") ?></td>
+				<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($repo_size)) ?></td>
 				<td class="text-end"><?= $archive_count ?></td>
 
 				<?php
@@ -74,11 +89,11 @@ foreach ($data as $user_name => $user) {
 					$dt = new DateTime($start);
 					$start_formated = $dt->format("d/m H:i");
 					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
-					$total["last_archive_datetime"] = min($total["last_archive_datetime"], $start);
-					$total["last_archive_original_size"] += $original_size;
+					$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $start);
+					$total [$server_name] ["last_archive_original_size"] += $original_size;
 					?>
 					<td class="text-end"><?= $start_formated ?></td>
-					<td class="text-end"><?= ByteUnits\Binary::bytes($original_size)->format("GiB", " ") ?></td>
+					<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($original_size)) ?></td>
 					<?php
 				}
 				else {
@@ -90,27 +105,33 @@ foreach ($data as $user_name => $user) {
 			}
 			else { // cache return empty value. will be fixed only when cache is correctly filled
 				?>
-				<td> &nbsp; </td>
-				<td> &nbsp; </td>
-				<td> &nbsp; </td>
-				<td> &nbsp; </td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
 				<?php
 			}
-			?>
-		</tr>
+		}
+		?>
+			</tr>
 		<?php
-		$user_repo_cpt ++;
 	}
 }
 ?>
 
 				<tr>
-					<th> <?= $total["user_count"] ?> </th>
-					<th> <?= $total["repo_count"] ?> </th>
-					<th class="text-end"><?= ByteUnits\Binary::bytes($total["repo_size"])->format("GiB", " ") ?></th>
-					<th class="text-end"><?= $total["archive_count"] ?></th>
-					<th class="text-end"><?= (new DateTime($total["last_archive_datetime"]))->format("d/m H:i") ?></th>
-					<th class="text-end"><?= ByteUnits\Binary::bytes($total["last_archive_original_size"])->format("GiB", " ") ?></th>
+					<th class="text-end"> <?= $total ["user_count"] ?></th>
+					<th class="text-end"> <?= $total ["repo_count"] ?></th>
+					<?php
+					foreach (array_keys($servers) as $server_name) {
+						?>
+						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
+						<th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th>
+						<th class="text-end"><?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?></th>
+						<th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th>
+						<?php
+					}
+					?>
 				</tr>
 		</table>
 

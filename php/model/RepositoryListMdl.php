@@ -27,7 +27,7 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 	 */
 	function getCacheKey () : string
 	{
-		return $cache_key = "repo(" . $this->repo_info->getUserName() . "-" . $this->repo_info->getRepoName() . ")-list";
+		return $cache_key = "repo(" . $this->repo_info->getServerName() . "-" . $this->repo_info->getUserName() . "-" . $this->repo_info->getRepoName() . ")-list";
 	}
 	
 	
