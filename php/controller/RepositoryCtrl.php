@@ -27,7 +27,6 @@ class RepositoryCtrl
 		$repos = $f3->get("conf.repos");
 
 		$data = [];
-		$count = 0;
 		foreach ($repos as $user_name => $user) {
 			foreach ($user as $repo_name => $repo_label) {
 				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
@@ -48,13 +47,11 @@ class RepositoryCtrl
 					$last_archive = null;
 				}
 				$data [$user_name] [$repo_name] ["last_archive"] = $last_archive;
-				
-				$count ++;
 			}
 		}
 		$f3->set("data", $data);
 		
-		$page ["title"] = "repositories ({$count})";
+		$page ["title"] = "repositories";
 		$page ["breadcrumbs"] = [
 			[
 				"label"	=> $f3->get("conf.hostname_override") ?? $f3->get("HOST"),

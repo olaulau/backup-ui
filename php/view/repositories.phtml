@@ -24,49 +24,66 @@ require_once __DIR__.'/layout/header.phtml';
 				<th class="text-center">unix user</th>
 				<th class="text-center">repo name</th>
 				<th class="text-center">repo size</th>
-				<th class="text-center"># of archives</th>
-				<th class="text-center">last archive : date time (original size)</th>
+				<th class="text-center"># archives</th>
+				<th class="text-center">last archive </th>
+				<th class="text-center">original size</th>
 			</tr>
 
 <?php
-$total_size = 0;
+$total["user_count"] = 0;
+$total["repo_count"] = 0;
+$total["repo_size"] = 0;
+$total["archive_count"] = 0;
+$total["last_archive_datetime"] = "9999";
+$total["last_archive_original_size"] = 0;
 foreach ($data as $user_name => $user) {
-	$cpt_repo = 1;
+	$total["user_count"] ++;
+	$user_repo_cpt = 1;
 	foreach ($user as $repo_name => $repo) {
+		$total["repo_count"] ++;
 		$repo_label = $conf ["repos"] [$user_name] [$repo_name];
 		?>
 		<tr>
 			<?php
-			if ($cpt_repo === 1) { // first column which can overlap many rows
+			if ($user_repo_cpt === 1) { // first column which can overlap many rows
 				?>
 				<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
 				<?php
 			}
 			
 			?>
-			<td><a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>" class="<?= empty($repo ["list"]) ? "text-body text-decoration-none pe-none" : "" ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a></td>
+			<td>
+				<a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
+					class="<?= empty($repo ["list"]) ? "text-body text-decoration-none pe-none" : "" ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a>
+			</td>
 			<?php
 			
 			if(!empty($repo ["info"]) && !empty($repo ["list"])) {
-				$size = $repo ["info"] ["cache"] ["stats"] ["unique_csize"];
-				$total_size += $size;
+				$repo_size = $repo ["info"] ["cache"] ["stats"] ["unique_csize"];
+				$total["repo_size"] += $repo_size;
+				$archive_count = count($repo ["list"] ["archives"]);
+				$total["archive_count"] += $archive_count;
 				?>
-				<td><?= ByteUnits\Binary::bytes($size)->format("GiB", " ") ?></td>
-				<td><?= count($repo ["list"] ["archives"]) ?></td>
+				<td class="text-end"><?= ByteUnits\Binary::bytes($repo_size)->format("GiB", " ") ?></td>
+				<td class="text-end"><?= $archive_count ?></td>
 
 				<?php
 				$last_archive = $repo ["last_archive"];
 				if(!empty($last_archive)) {
 					$start = $last_archive ["archives"] [0] ["start"];
-					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
 					$dt = new DateTime($start);
-					$start = $dt->format("d/m/Y H:i:s");
+					$start_formated = $dt->format("d/m H:i");
+					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
+					$total["last_archive_datetime"] = min($total["last_archive_datetime"], $start);
+					$total["last_archive_original_size"] += $original_size;
 					?>
-					<td><?= $start ?> (<?= ByteUnits\Binary::bytes($original_size)->format("GiB", " ") ?>)</td>
+					<td class="text-end"><?= $start_formated ?></td>
+					<td class="text-end"><?= ByteUnits\Binary::bytes($original_size)->format("GiB", " ") ?></td>
 					<?php
 				}
 				else {
 					?>
+					<td>&nbsp;</td>
 					<td>&nbsp;</td>
 					<?php
 				}
@@ -76,19 +93,24 @@ foreach ($data as $user_name => $user) {
 				<td> &nbsp; </td>
 				<td> &nbsp; </td>
 				<td> &nbsp; </td>
+				<td> &nbsp; </td>
 				<?php
 			}
 			?>
 		</tr>
 		<?php
-		$cpt_repo ++;
+		$user_repo_cpt ++;
 	}
 }
 ?>
 
 				<tr>
-					<th colspan="2" class="text-end"> TOTAL </th>
-					<th colspan="3"><?= ByteUnits\Binary::bytes($total_size)->format("GiB", " ") ?></th>
+					<th> <?= $total["user_count"] ?> </th>
+					<th> <?= $total["repo_count"] ?> </th>
+					<th class="text-end"><?= ByteUnits\Binary::bytes($total["repo_size"])->format("GiB", " ") ?></th>
+					<th class="text-end"><?= $total["archive_count"] ?></th>
+					<th class="text-end"><?= (new DateTime($total["last_archive_datetime"]))->format("d/m H:i") ?></th>
+					<th class="text-end"><?= ByteUnits\Binary::bytes($total["last_archive_original_size"])->format("GiB", " ") ?></th>
 				</tr>
 		</table>
 
