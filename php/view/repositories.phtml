@@ -64,7 +64,11 @@ foreach ($repos as $user_name => $user) {
 	foreach ($user as $repo_name => $repo_label) {
 		$total ["repo_count"] ++;
 		$repo_label = $conf ["repos"] [$user_name] [$repo_name];
-		$repo = $data ["localhost"] [$user_name] [$repo_name]; // to make a link to the repo on this server
+		
+		// to make a link to the repo on this server
+		$local_server_name = Stuff::get_local_server_name();
+		// $local_server = $servers [$local_server_name];
+		$repo = $data [$local_server_name] [$user_name] [$repo_name]; 
 		?>
 			<td>
 				<a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"

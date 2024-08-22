@@ -5,7 +5,7 @@ use Base;
 use model\ArchiveInfoMdl;
 use model\RepositoryInfoMdl;
 use model\RepositoryListMdl;
-
+use service\Stuff;
 
 class RepositoryCtrl
 {
@@ -87,7 +87,8 @@ class RepositoryCtrl
 		$repo_label = $f3->get("conf.repos.$user_name.$repo_name");
 		$f3->set("repo_label", $repo_label);
 		
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
+		$local_server_name = Stuff::get_local_server_name();
+		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $local_server_name);
 		$repo_list = new RepositoryListMdl($repo_info);
 		$repo_list_value = $repo_list->getValue();
 		
@@ -141,7 +142,8 @@ class RepositoryCtrl
 		$repo_label = $f3->get("conf.repos.$repo_name.label");
 		$f3->set("repo_label", $repo_label);
 		
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
+		$local_server_name = Stuff::get_local_server_name();
+		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $local_server_name);
 		$arch_info = new ArchiveInfoMdl($repo_info, $archive_name);
 		$arch_info_value = $arch_info->getValue();
 		
@@ -155,25 +157,69 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cacheUpdateGET (Base $f3) : void
+	public static function cacheUpdateRepoGET (Base $f3) : void
 	{
-		$repos = $f3->get("conf.repos");
-		foreach ($repos as $user_name => $user) {
-			foreach ($user as $repo_name => $repo_label) {
-				$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
-				$repo_info->updateCacheRecursive();
+		// params
+		$force_archive_infos = $f3->get("GET.force_archive_infos");
+		$user_name = $f3->get("PARAMS.user_name");
+		$repo_name = $f3->get("PARAMS.repo_name");
+		
+		// update own cache
+		$local_server_name = Stuff::get_local_server_name();
+		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+		$repo_info->updateCacheRecursive($force_archive_infos ?? false);
+		
+		// prepare data to be sent
+		$repo_list = new RepositoryListMdl($repo_info);
+		$data = [
+			"repo_info" =>		$repo_info->getValueFromCache(),
+			"repo_list" =>		$repo_list->getValueFromCache(),
+			"archives_info" =>	[],
+		];
+		foreach($data ["repo_list"] ["archives"] as $archive) {
+			$archive_name = $archive ["archive"];
+			$archive_info = new ArchiveInfoMdl($repo_info, $archive_name);
+			$data ["archives_info"] [$archive_name] = $archive_info->getValueFromCache();
+		}
+		
+		// push data to other servers
+		$local_server_name = Stuff::get_local_server_name();
+		$servers = $f3->get("conf.servers");
+		foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
+			if($server_remote === true) { // don't push to yourself
+				$server_url = rtrim($server_url, "/");
+				$url = $server_url . $f3->alias("cache_push", ["server_name" => $local_server_name, "user_name" => $user_name, "repo_name" => $repo_name]);
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_HEADER, 0);
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, ["data" => json_encode($data)]);
+				curl_exec($ch);
+				curl_close($ch);
 			}
 		}
 	}
 	
 	
-	public static function cacheUpdateRepoGET (Base $f3) : void
+	public static function cachePushPOST (Base $f3) : void
 	{
-		$force_archive_infos = $f3->get("GET.force_archive_infos");
+		// params & data
+		$server_name = $f3->get("PARAMS.server_name");
 		$user_name = $f3->get("PARAMS.user_name");
 		$repo_name = $f3->get("PARAMS.repo_name");
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name);
-		$repo_info->updateCacheRecursive($force_archive_infos ?? false);
+		$data = json_decode($f3->get("POST.data"), true);
+		
+		// push into cache
+		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $server_name);
+		$repo_info->pushIntoCache($data ["repo_info"]);
+		
+		$repo_list = new RepositoryListMdl($repo_info);
+		$repo_list->pushIntoCache($data ["repo_list"]);
+		
+		foreach($data ["archives_info"] as $archive_name => $archive) {
+			$archive_info = new ArchiveInfoMdl($repo_info, $archive_name);
+			$archive_info->pushIntoCache($archive);
+		}
 	}
 	
 }

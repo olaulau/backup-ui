@@ -74,4 +74,14 @@ abstract class AbstractCachedValueMdl
 		$cache->clear($this->getCacheKey());
 	}
 	
+	
+	/**
+	 * push content into cache
+	 */
+	public function pushIntoCache (/*mixed */$content, int $ttl=0) : void
+	{
+		$cache = \Cache::instance();
+		$cache->set($this->getCacheKey(), $content, $ttl);
+	}
+	
 }

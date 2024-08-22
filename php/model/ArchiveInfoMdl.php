@@ -34,7 +34,7 @@ class ArchiveInfoMdl extends AbstractCachedValueMdl
 	 */
 	function getCacheKey () : string
 	{
-		return $cache_key = "repo(" . $this->repo_info->getServerName() . "-". $this->repo_info->getUserName() . "-". $this->repo_info->getRepoName() . ")-archive($this->archive_name)-info";
+		return "server(" . $this->repo_info->getServerName() . ")-user(" . $this->repo_info->getUserName() . ")-repo(" . $this->repo_info->getRepoName() . ")-archive(" . $this->getArchiveName() . ")-info";
 	}
 	
 	

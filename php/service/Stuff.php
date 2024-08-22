@@ -1,6 +1,7 @@
 <?php
 namespace service;
 
+use Base;
 use ByteUnits\Binary;
 
 
@@ -20,4 +21,16 @@ class Stuff
 		return number_format($float, 1, ",", " ");
 	}
 	
+	
+	public static function get_local_server_name () : string
+	{
+		$f3 = Base::instance();
+		$servers = $f3->get("conf.servers");
+		foreach($servers as $server_name => $server) {
+			if($server ["remote"] === false) {
+				return $server_name;
+			}
+		}
+		return null;
+	}
 }

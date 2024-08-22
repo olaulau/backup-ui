@@ -2,7 +2,7 @@
 namespace model;
 
 use ErrorException;
-
+use service\Stuff;
 
 class RepositoryInfoMdl extends AbstractCachedValueMdl
 {
@@ -12,7 +12,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	private string $repo_name;
 	
 	
-	public function __construct (string $user_name, string $repo_name, string $server_name="localhost")
+	public function __construct (string $user_name, string $repo_name, string $server_name)
 	{
 		$this->server_name = $server_name;
 		$this->user_name = $user_name;
@@ -50,8 +50,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	 */
 	function getCacheKey () : string
 	{
-		$cache_key = "repo({$this->server_name}-{$this->user_name}-{$this->repo_name})-info";
-		return $cache_key;
+		return "server({$this->server_name})-user({$this->user_name})-repo({$this->repo_name})-info";
 	}
 	
 	/**
@@ -59,9 +58,11 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	 */
 	function calculateValue ()/* : mixed*/
 	{
-		if($this->server_name !== "localhost") {
+		$local_server_name = Stuff::get_local_server_name();
+		if($this->server_name !== $local_server_name) {
 			throw new ErrorException("can't get repo infos for remote repo");
 		}
+		
 		$location = $this->getLocation();
 		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
 		\exec($cmd, $output, $result_code);
@@ -91,7 +92,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 			$archives_list = array_column($repo_list_value ["archives"], "archive");
 			$archives_to_remove = array_diff($old_archives_list, $archives_list);
 			foreach($archives_to_remove as $archive_name) {
-				echo "removing archive $archive_name from cache" . PHP_EOL;
+				echo "removing archive $archive_name from cache <br/>" . PHP_EOL;
 				$archive_info = new ArchiveInfoMdl($this, $archive_name);
 				$archive_info->removeFromCache ();
 			}
@@ -103,7 +104,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 				$archive_name = $archive["name"];
 				$archive_info = new ArchiveInfoMdl($this, $archive_name);
 				if($force_archive_infos || !$archive_info->isCached()) {
-					echo "updating archive $archive_name to cache" . PHP_EOL;
+					echo "updating archive $archive_name to cache <br/>" . PHP_EOL;
 					$archive_info->updateCache();
 				}
 			}
