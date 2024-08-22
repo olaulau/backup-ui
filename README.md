@@ -12,11 +12,19 @@ display backup so that you can easilly check  your repo are running fine
 - PHP (>= 7.4)
 
 
-# install
+# install the borg client script (on the client)
 cd bin/
 rm borg_client.sh
 wget https://raw.githubusercontent.com/olaulau/borg-ui/main/script/borg_client.sh
 chmod u+x borg_client.sh
+crontab -e
+	0	*	*	*	*	bin/borg_client.sh <server> <user_name> <remo_name>
+
+
+# create a user (on the server)
+adduser <user>
+adduser www-data <user>
+systemctl restart apache2
 
 
 # configure

@@ -91,6 +91,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 			$archives_list = array_column($repo_list_value ["archives"], "archive");
 			$archives_to_remove = array_diff($old_archives_list, $archives_list);
 			foreach($archives_to_remove as $archive_name) {
+				echo "removing archive $archive_name from cache" . PHP_EOL;
 				$archive_info = new ArchiveInfoMdl($this, $archive_name);
 				$archive_info->removeFromCache ();
 			}
@@ -102,6 +103,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 				$archive_name = $archive["name"];
 				$archive_info = new ArchiveInfoMdl($this, $archive_name);
 				if($force_archive_infos || !$archive_info->isCached()) {
+					echo "updating archive $archive_name to cache" . PHP_EOL;
 					$archive_info->updateCache();
 				}
 			}

@@ -30,26 +30,30 @@ config_file=`realpath ~/.config/borgmatic/borgmatic_${server_name}_${user_name}_
 #borgmatic --config $config_file config validate
 #borgmatic --config $config_file rcreate --encryption none
 
-borgmatic --config $config_file create	--verbosity 1 --progress --list --stats
+borgmatic --config $config_file create	--verbosity 1 --list --files --stats
 borgmatic --config $config_file prune	--verbosity 1 --list --stats
 borgmatic --config $config_file compact	--verbosity 1 --progress
 borgmatic --config $config_file check	--verbosity 1 --progress
 
-#borgmatic --config $config_file info
+#borgmatic --config $config_file rinfo
 #borgmatic --config $config_file list
-#borgmatic --config $config_file info --archive latest --json
+#borgmatic --config $config_file info --archive latest
+echo ""
 
 # force permissions
 ssh $user_name@$server_name "chmod -R 2770 ~/borg/$repo_name/"
+echo ""
 
 # query borg-ui to update his cache for this repo
 echo "pushing cache update"
 url="$server_name/borg-ui/cache/update/$user_name/$repo_name"
 echo "=> $url"
 curl --location $url
+echo ""
 url="$server_name/borg-ui_DEV/cache/update/$user_name/$repo_name"
 echo "=> $url"
 curl --location $url
+echo ""
 
 echo "end : `date`"
 echo ""
