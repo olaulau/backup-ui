@@ -3,6 +3,9 @@ namespace service;
 
 use Base;
 use ByteUnits\Binary;
+use DateTimeImmutable;
+use DateTimeInterface;
+use ErrorException;
 
 
 class Stuff
@@ -33,4 +36,29 @@ class Stuff
 		}
 		return null;
 	}
+	
+	
+	public static function start_delay_bg_color (DateTimeInterface $dt) : string
+	{
+		$f3 = Base::instance();
+		
+		// calculate delay
+		$now = new DateTimeImmutable();
+		$di = $dt->diff($now);
+		$delay_days = $di->d;
+		if($delay_days < 0) {
+			throw new ErrorException("future archive");
+		}
+		
+		// match according conf color
+		$delays = $f3->get("conf.delays");
+		$res = "";
+		foreach($delays as $color => $min) {
+			if($delay_days >= $min) {
+				$res = $color;
+			}
+		}
+		return $res;
+	}
+	
 }

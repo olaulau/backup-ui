@@ -6,7 +6,7 @@ display borg backups repos informations so that you can easilly check your backu
 <br/>
 
 ## features
-- (coming soon) view repos infos from multiple servers
+- view repos infos from multiple servers
 - list repos and their details
 - list archives and their details
 - access raw archive informations

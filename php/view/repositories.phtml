@@ -90,13 +90,14 @@ foreach ($repos as $user_name => $user) {
 				$last_archive = $repo ["last_archive"];
 				if(!empty($last_archive)) {
 					$start = $last_archive ["archives"] [0] ["start"];
-					$dt = new DateTime($start);
+					$dt = new DateTimeImmutable($start);
+					$bg_color = Stuff::start_delay_bg_color($dt);
 					$start_formated = $dt->format("d/m H:i");
 					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
 					$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $start);
 					$total [$server_name] ["last_archive_original_size"] += $original_size;
 					?>
-					<td class="text-end"><?= $start_formated ?></td>
+					<td class="text-end bg-<?=$bg_color?>"><?= $start_formated ?></td>
 					<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($original_size)) ?></td>
 					<?php
 				}
