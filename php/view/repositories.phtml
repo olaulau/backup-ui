@@ -26,13 +26,13 @@ require_once __DIR__.'/layout/header.phtml';
 			<?php
 			$total ["user_count"] = 0;
 			$total ["repo_count"] = 0;
-			foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
+			foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
 				$total [$server_name] ["repo_size"] = 0;
 				$total [$server_name] ["archive_count"] = 0;
 				$total [$server_name] ["last_archive_datetime"] = "9999";
 				$total [$server_name] ["last_archive_original_size"] = 0;
 				?>
-				<th colspan="4" class="text-center"><a href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
+				<th colspan="4" class="text-center"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
 				<?php
 			}
 			?>
