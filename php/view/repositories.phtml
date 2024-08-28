@@ -1,6 +1,7 @@
 <?php
 
 use model\DuplicatiRepositoryInfoMdl;
+use model\DuplicatiRepositoryListMdl;
 use service\Stuff;
 
 require_once __DIR__.'/layout/head.phtml';
@@ -226,8 +227,26 @@ foreach ($repos_duplicati as $user_name => $user) {
 				<?php
 			}
 			?>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
+			
+			<?php
+			$repo_list = new DuplicatiRepositoryListMdl($repo_info);
+			$filesets = $repo_list->getValueFromCache();
+			if(!empty($filesets)) {
+				$dt = $filesets[0];
+				$bg_color = Stuff::start_delay_bg_color($dt);
+				?>
+				<td class="text-end"><?= count($filesets) ?></td>
+				<td class="text-end bg-<?= $bg_color ?>"><?= $dt->format("d/m H:i") ?></td>
+				<?php
+			}
+			else {
+				?>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<?php
+			}
+			?>
+			
 			<td>&nbsp;</td>
 			<?php
 		}

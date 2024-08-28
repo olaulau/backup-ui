@@ -1,6 +1,7 @@
 <?php
 namespace model;
 
+use DateTimeImmutable;
 use ErrorException;
 use service\Stuff;
 
@@ -37,62 +38,33 @@ class DuplicatiRepositoryListMdl extends AbstractCachedValueMdl
 	function calculateValue ()/* : mixed*/
 	{
 		$local_server_name = Stuff::get_local_server_name();
-		if($this->server_name !== $local_server_name) {
+		if($this->getRepoInfo()->getServerName() !== $local_server_name) {
 			throw new ErrorException("can't get repo infos for remote repo");
 		}
 		
-		$location = $this->getLocation();
-		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
-		\exec($cmd, $output, $result_code);
-		$output = \implode(PHP_EOL, $output);
-		$repo = \json_decode($output, true);
-		$json_error = json_last_error();
-		if($json_error !== JSON_ERROR_NONE) {
-			throw new ErrorException($output);
+		$repo_path = "/home/{$this->getRepoInfo()->getUserName()}/duplicati/{$this->getRepoInfo()->getRepoName()}/";
+		$cmd = "PASSPHRASE={$this->getRepoInfo()->get_passphrase()} duplicati-cli find {$repo_path} --auto-update=false --all-versions=true --debug-output=true --full-result=true --console-log-level=Information";
+		exec($cmd, $output, $result_code);
+		if($result_code !== 0) {
+			throw new ErrorException("error executing 'duplicati-cli'");
 		}
-		return $repo;
-	}
-	
-	
-	function updateCacheRecursive (bool $force_archive_infos=false) : void
-	{
-		// repo infos
-		$this->updateCache();
 		
-		// repo's archive list
-		$repo_list = new BorgRepositoryListMdl($this);
-		$old_repo_list_value = $repo_list->getValueFromCache();
-		$repo_list_value = $repo_list->updateCache();
+		$list_begins_after = "Listing filesets:";
+		$search = array_search($list_begins_after, $output);
+		if($search === false) {
+			throw new ErrorException("coulnd't find filesets listing in 'duplicati-cli list' command output");
+		}
+		$filesets_strings = array_slice($output, $search+1);
 		
-		// remove deleted archives
-		if(!empty($old_repo_list_value)) {
-			$old_archives_list = array_column($old_repo_list_value ["archives"], "archive");
-			$archives_list = array_column($repo_list_value ["archives"], "archive");
-			$archives_to_remove = array_diff($old_archives_list, $archives_list);
-			foreach($archives_to_remove as $archive_name) {
-				echo "removing archive $archive_name from cache <br/>" . PHP_EOL;
-				$archive_info = new BorgArchiveInfoMdl($this, $archive_name);
-				$archive_info->removeFromCache ();
+		$filesets = [];
+		foreach($filesets_strings as $filesets_str) {
+			$res = preg_match('|(\d+)\t: (((\d{2})/(\d{2})/(\d{4})) ((\d{2}):(\d{2}):(\d{2})))|', $filesets_str, $matches);
+			if($res === false) {
+				throw new ErrorException("regex didn't match");
 			}
+			$filesets [$matches[1]] = DateTimeImmutable::createFromFormat("m/d/Y H:i:s", $matches[2]);
 		}
-		
-		// archives's infos
-		if(!empty($repo_list_value)) {
-			foreach ($repo_list_value["archives"] as $archive) {
-				$archive_name = $archive["name"];
-				$archive_info = new BorgArchiveInfoMdl($this, $archive_name);
-				if($force_archive_infos || !$archive_info->isCached()) {
-					echo "updating archive $archive_name to cache <br/>" . PHP_EOL;
-					$archive_info->updateCache();
-				}
-			}
-		}
-	}
-	
-	
-	public function isLocked () : bool
-	{
-		return file_exists($this->getLocation() . "/" . "lock.exclusive");
+		return $filesets;
 	}
 	
 }

@@ -46,7 +46,7 @@ class DuplicatiRepositoryInfoMdl extends AbstractCachedValueMdl
 	}
 	
 	
-	public function get_conf () : string
+	public function get_conf () : array
 	{
 		$f3 = \Base::instance();
 		
@@ -110,37 +110,9 @@ class DuplicatiRepositoryInfoMdl extends AbstractCachedValueMdl
 		// repo infos
 		$this->updateCache();
 		
-		// repo's archive list
-		/////////////////////////////////
-		/*
-		$repo_list = new BorgRepositoryListMdl($this);
-		$old_repo_list_value = $repo_list->getValueFromCache();
-		$repo_list_value = $repo_list->updateCache();
-		
-		// remove deleted archives
-		if(!empty($old_repo_list_value)) {
-			$old_archives_list = array_column($old_repo_list_value ["archives"], "archive");
-			$archives_list = array_column($repo_list_value ["archives"], "archive");
-			$archives_to_remove = array_diff($old_archives_list, $archives_list);
-			foreach($archives_to_remove as $archive_name) {
-				echo "removing archive $archive_name from cache <br/>" . PHP_EOL;
-				$archive_info = new BorgArchiveInfoMdl($this, $archive_name);
-				$archive_info->removeFromCache ();
-			}
-		}
-		
-		// archives's infos
-		if(!empty($repo_list_value)) {
-			foreach ($repo_list_value["archives"] as $archive) {
-				$archive_name = $archive["name"];
-				$archive_info = new BorgArchiveInfoMdl($this, $archive_name);
-				if($force_archive_infos || !$archive_info->isCached()) {
-					echo "updating archive $archive_name to cache <br/>" . PHP_EOL;
-					$archive_info->updateCache();
-				}
-			}
-		}
-		*/
+		// repo list
+		$repo_list = new DuplicatiRepositoryListMdl($this);
+		$repo_list->updateCache();
 	}
 	
 	
