@@ -5,7 +5,7 @@ use ErrorException;
 use service\Stuff;
 
 
-class RepositoryInfoMdl extends AbstractCachedValueMdl
+class DuplicatiRepositoryInfoMdl extends AbstractCachedValueMdl
 {
 	
 	private string $server_name;
@@ -42,7 +42,28 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		$f3 = \Base::instance();
 
 		$home_prefix = $f3->get("conf.home_prefix");
-		return $location = "$home_prefix/$this->user_name/borg/$this->repo_name/";
+		return $location = "$home_prefix/$this->user_name/duplicati/$this->repo_name/";
+	}
+	
+	
+	public function get_conf () : string
+	{
+		$f3 = \Base::instance();
+		
+		$res = $f3->get("conf.repos.duplicati.{$this->getUserName()}.{$this->getRepoName()}");
+		return $res;
+	}
+	
+	public function get_label () : string
+	{
+		$conf = $this->get_conf();
+		return $conf ["label"];
+	}
+	
+	public function get_passphrase () : string
+	{
+		$conf = $this->get_conf();
+		return $conf ["passphrase"];
 	}
 	
 	
@@ -51,7 +72,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 	 */
 	function getCacheKey () : string
 	{
-		return "server({$this->server_name})-user({$this->user_name})-repo({$this->repo_name})-info";
+		return "server({$this->server_name})-user({$this->user_name})-type(duplicati)-repo({$this->repo_name})-info";
 	}
 	
 	/**
@@ -64,16 +85,23 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 			throw new ErrorException("can't get repo infos for remote repo");
 		}
 		
-		$location = $this->getLocation();
-		$cmd = "BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes BORG_RELOCATED_REPO_ACCESS_IS_OK=yes borg info $location --json 2>&1";
-		\exec($cmd, $output, $result_code);
-		$output = \implode(PHP_EOL, $output);
-		$repo = \json_decode($output, true);
-		$json_error = json_last_error();
-		if($json_error !== JSON_ERROR_NONE) {
-			throw new ErrorException($output);
+		$repo_location = $this->getLocation();
+		$cmd = "du -sb {$repo_location}";
+		exec($cmd, $output, $result_code);
+		if($result_code !== 0) {
+			throw new ErrorException("error executing 'du' command");
 		}
-		return $repo;
+		
+		$regex = '/^(\d+)\t(.+)$/';
+		$res = preg_match($regex, $output[0], $matches);
+		if($res === false) {
+			throw new ErrorException("error during 'du' output parsing");
+		}
+		if($res === 0) {
+			throw new ErrorException("'du' output was not as anticipated");
+		}
+		
+		return $matches[1];
 	}
 	
 	
@@ -83,7 +111,9 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		$this->updateCache();
 		
 		// repo's archive list
-		$repo_list = new RepositoryListMdl($this);
+		/////////////////////////////////
+		/*
+		$repo_list = new BorgRepositoryListMdl($this);
 		$old_repo_list_value = $repo_list->getValueFromCache();
 		$repo_list_value = $repo_list->updateCache();
 		
@@ -94,7 +124,7 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 			$archives_to_remove = array_diff($old_archives_list, $archives_list);
 			foreach($archives_to_remove as $archive_name) {
 				echo "removing archive $archive_name from cache <br/>" . PHP_EOL;
-				$archive_info = new ArchiveInfoMdl($this, $archive_name);
+				$archive_info = new BorgArchiveInfoMdl($this, $archive_name);
 				$archive_info->removeFromCache ();
 			}
 		}
@@ -103,13 +133,14 @@ class RepositoryInfoMdl extends AbstractCachedValueMdl
 		if(!empty($repo_list_value)) {
 			foreach ($repo_list_value["archives"] as $archive) {
 				$archive_name = $archive["name"];
-				$archive_info = new ArchiveInfoMdl($this, $archive_name);
+				$archive_info = new BorgArchiveInfoMdl($this, $archive_name);
 				if($force_archive_infos || !$archive_info->isCached()) {
 					echo "updating archive $archive_name to cache <br/>" . PHP_EOL;
 					$archive_info->updateCache();
 				}
 			}
 		}
+		*/
 	}
 	
 	

@@ -4,13 +4,13 @@ namespace model;
 use ErrorException;
 
 
-class RepositoryListMdl extends AbstractCachedValueMdl
+class BorgRepositoryListMdl extends AbstractCachedValueMdl
 {
 	
-	private RepositoryInfoMdl $repo_info;
+	private BorgRepositoryInfoMdl $repo_info;
 	
 	
-	public function __construct (RepositoryInfoMdl $repo_info)
+	public function __construct (BorgRepositoryInfoMdl $repo_info)
 	{
 		$this->repo_info = $repo_info;
 	}
@@ -27,7 +27,7 @@ class RepositoryListMdl extends AbstractCachedValueMdl
 	 */
 	function getCacheKey () : string
 	{
-		return "server(" . $this->repo_info->getServerName() . ")-user(" . $this->repo_info->getUserName() . ")-repo(" . $this->repo_info->getRepoName() . ")-list";
+		return "server(" . $this->repo_info->getServerName() . ")-user(" . $this->repo_info->getUserName() . ")-type(borg)-repo(" . $this->repo_info->getRepoName() . ")-list";
 	}
 	
 	

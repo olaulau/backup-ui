@@ -46,11 +46,13 @@ echo ""
 
 # query borg-ui to update his cache for this repo
 echo "pushing cache update"
-url="$server_name/borg-ui/cache/update/$user_name/$repo_name"
+url="$server_name/borg-ui/cache/update/borg/$user_name/$repo_name"
 echo "=> $url"
 curl --location $url
+
+# also query _DEV URL
 echo ""
-url="$server_name/borg-ui_DEV/cache/update/$user_name/$repo_name"
+url="$server_name/borg-ui_DEV/cache/update/borg/$user_name/$repo_name"
 echo "=> $url"
 curl --location $url
 echo ""

@@ -1,30 +1,38 @@
 # description
-display borg backups repos informations so that you can easilly check your backups are running fine.
+display borg backups (borg & duplicati) informations so that you can easilly check your backups are running fine.
 
 <a href="doc/repositories.png"><img src="doc/repositories.png" width="600" title="repositories"></a> &nbsp; 
 <a href="doc/archives.png"><img src="doc/archives.png" width="600" title="archives"></a>
 <br/>
 
 ## features
-- view repos infos from multiple servers
-- list repos and their details
-- list archives and their details
-- access raw archive informations
+- borg
+	- view repos infos from multiple servers
+	- list repos and their details
+	- list archives and their details
+	- access raw archive informations
+- (coming soon) duplicati
+	- repo disk usage size
+	- list archives (date)
 
 <br/>
 <br/>
 
 # install
 ## requirements
+- git
 - borg (recent versions), on both client and server
 - (recommended) borgmatic on the client, if you use borg client script
-- webserver (recomended Apache >= 2.4)
-- PHP (>= 7.4)
+- duplicati-cli on the server
+- webserver (recommended Apache >= 2.4)
+- PHP (>= 7.4), composer
+- npm
 
 ## compatibility
 - Linux : tested on debian 12+
-- Synology : tested on an old DS216j with DSM 7.1.1-42962 Update 5
-	- you can find python & borg packages in community repo
+- Synology : tested on an old DS216j with DSM 7.1.1-42962 Update 5 (borg part)
+	- you can find python, borg, node.js packages in community repo
+	- download composer.phar from their website (use ```php8.0 composer.phar install```)
 	- you may have to go ssh root to handle repo permissions correctly
 
 
@@ -37,20 +45,20 @@ systemctl restart apache2
 
 ## web ui
 ```
-git clone https://github.com/olaulau/borg-ui
+git clone https://github.com/olaulau/backup-ui
 composer i
 npm i
 ```
 
 ## configure
 ```
-cd borg_ui
+cd backup
 vim conf/conf.ini
 	fill-in values
 ```
 
 ## usage
-just go to ```https://<host>/borg_ui/repositories``` with your browser
+just go to ```https://<host>/backup/repositories``` with your browser
 
 <br/>
 <br/>
@@ -82,7 +90,7 @@ crontab -e
 - refresh of cache is push by the client script
 
 ## data structure
-server > user > repo > archives
+server > user > type > repo > archive
 
 ## library used
 - [fat free framework](https://fatfreeframework.com/3.8/home) : PHP framework

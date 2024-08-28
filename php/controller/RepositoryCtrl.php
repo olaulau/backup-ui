@@ -2,9 +2,11 @@
 namespace controller;
 
 use Base;
-use model\ArchiveInfoMdl;
-use model\RepositoryInfoMdl;
-use model\RepositoryListMdl;
+use ErrorException;
+use model\BorgArchiveInfoMdl;
+use model\BorgRepositoryInfoMdl;
+use model\BorgRepositoryListMdl;
+use model\DuplicatiRepositoryInfoMdl;
 use service\Stuff;
 
 
@@ -30,35 +32,42 @@ class RepositoryCtrl
 		$f3->set("servers", $servers);
 		$users = $f3->get("conf.users");
 		$f3->set("users", $users);
-		$repos = $f3->get("conf.repos");
-		$f3->set("repos", $repos);
+		$repos_borg = $f3->get("conf.repos.borg");
+		$f3->set("repos_borg", $repos_borg);
+		$repos_duplicati = $f3->get("conf.repos.duplicati");
+		$f3->set("repos_duplicati", $repos_duplicati);
 		
-		$data = [];
+		$data_borg = [];
 		foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
-			foreach ($repos as $user_name => $user) {
+			foreach ($repos_borg as $user_name => $user) {
 				foreach ($user as $repo_name => $repo_label) {
-					$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $server_name);
+					$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
 					$repo_info_value = $repo_info->getValueFromCache();
-					$data [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
+					$data_borg [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
 					
-					$repo_list = new RepositoryListMdl($repo_info);
+					$repo_list = new BorgRepositoryListMdl($repo_info);
 					$repo_list_value = $repo_list->getValueFromCache();
-					$data [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
+					$data_borg [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
 					
 					if(!empty($repo_list_value)) {
 						$archives = $repo_list_value ["archives"];
 						$last_archive = $archives[array_key_last($archives)];
 						$last_archive_name = $last_archive ["name"];
-						$last_archive = (new ArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+						$last_archive = (new BorgArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
 					}
 					else {
 						$last_archive = null;
 					}
-					$data [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
+					$data_borg [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
 				}
 			}
 		}
-		$f3->set("data", $data);
+		$f3->set("data_borg", $data_borg);
+		
+		///////////////
+		$data_duplicati = [];
+		$f3->set("data_duplicati", $data_duplicati);
+		///////////////
 		
 		$page ["title"] = "repositories";
 		$page ["breadcrumbs"] = [
@@ -85,12 +94,12 @@ class RepositoryCtrl
 		$f3->set("user_label", $user_label);
 		$repo_name = $f3->get("PARAMS.repo_name");
 		$f3->set("repo_name", $repo_name);
-		$repo_label = $f3->get("conf.repos.$user_name.$repo_name");
+		$repo_label = $f3->get("conf.repos.borg.$user_name.$repo_name");
 		$f3->set("repo_label", $repo_label);
 		
 		$local_server_name = Stuff::get_local_server_name();
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $local_server_name);
-		$repo_list = new RepositoryListMdl($repo_info);
+		$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+		$repo_list = new BorgRepositoryListMdl($repo_info);
 		$repo_list_value = $repo_list->getValue();
 		
 		$archives = array_reverse($repo_list_value["archives"]);
@@ -102,7 +111,7 @@ class RepositoryCtrl
 			$dt = new \DateTime($archive["start"]);
 			$js_data [] = $dt->getTimestamp();
 			
-			$archive_info = new ArchiveInfoMdl($repo_info, $archive["name"]);
+			$archive_info = new BorgArchiveInfoMdl($repo_info, $archive["name"]);
 			$archive_info_value = $archive_info->getValue();
 			$archives_info [ $archive["name"] ] = $archive_info_value;
 		}
@@ -140,12 +149,12 @@ class RepositoryCtrl
 		$user_name = $f3->get("PARAMS.user_name");
 		$repo_name = $f3->get("PARAMS.repo_name");
 		$archive_name = $f3->get("PARAMS.archive_name");
-		$repo_label = $f3->get("conf.repos.$repo_name.label");
+		$repo_label = $f3->get("conf.repos.borg.$repo_name.label");
 		$f3->set("repo_label", $repo_label);
 		
 		$local_server_name = Stuff::get_local_server_name();
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $local_server_name);
-		$arch_info = new ArchiveInfoMdl($repo_info, $archive_name);
+		$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+		$arch_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
 		$arch_info_value = $arch_info->getValue();
 		
 		echo "<pre>";
@@ -162,42 +171,53 @@ class RepositoryCtrl
 	{
 		// params
 		$force_archive_infos = $f3->get("GET.force_archive_infos");
+		$repo_type = $f3->get("PARAMS.repo_type");
 		$user_name = $f3->get("PARAMS.user_name");
 		$repo_name = $f3->get("PARAMS.repo_name");
 		
-		// update own cache
 		$local_server_name = Stuff::get_local_server_name();
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $local_server_name);
-		$repo_info->updateCacheRecursive($force_archive_infos ?? false);
-		
-		// prepare data to be sent
-		$repo_list = new RepositoryListMdl($repo_info);
-		$data = [
-			"repo_info" =>		$repo_info->getValueFromCache(),
-			"repo_list" =>		$repo_list->getValueFromCache(),
-			"archives_info" =>	[],
-		];
-		foreach($data ["repo_list"] ["archives"] as $archive) {
-			$archive_name = $archive ["archive"];
-			$archive_info = new ArchiveInfoMdl($repo_info, $archive_name);
-			$data ["archives_info"] [$archive_name] = $archive_info->getValueFromCache();
-		}
-		
-		// push data to other servers
-		$local_server_name = Stuff::get_local_server_name();
-		$servers = $f3->get("conf.servers");
-		foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
-			if($server_remote === true) { // don't push to yourself
-				$server_url = rtrim($server_url, "/");
-				$url = $server_url . $f3->alias("cache_push", ["server_name" => $local_server_name, "user_name" => $user_name, "repo_name" => $repo_name]);
-				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, ["data" => json_encode($data)]);
-				curl_exec($ch);
-				curl_close($ch);
+		if($repo_type === "borg") {
+			// update own cache
+			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+			$repo_info->updateCacheRecursive($force_archive_infos ?? false);
+			
+			// prepare data to be sent
+			$repo_list = new BorgRepositoryListMdl($repo_info);
+			$data = [
+				"repo_info" =>		$repo_info->getValueFromCache(),
+				"repo_list" =>		$repo_list->getValueFromCache(),
+				"archives_info" =>	[],
+			];
+			foreach($data ["repo_list"] ["archives"] as $archive) {
+				$archive_name = $archive ["archive"];
+				$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
+				$data ["archives_info"] [$archive_name] = $archive_info->getValueFromCache();
 			}
+			
+			// push data to other servers
+			$local_server_name = Stuff::get_local_server_name();
+			$servers = $f3->get("conf.servers");
+			foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
+				if($server_remote === true) { // don't push to yourself
+					$server_url = rtrim($server_url, "/");
+					$url = $server_url . $f3->alias("cache_push", ["server_name" => $local_server_name, "user_name" => $user_name, "repo_name" => $repo_name]);
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, $url);
+					curl_setopt($ch, CURLOPT_HEADER, 0);
+					curl_setopt($ch, CURLOPT_POST, 1);
+					curl_setopt($ch, CURLOPT_POSTFIELDS, ["data" => json_encode($data)]);
+					curl_exec($ch);
+					curl_close($ch);
+				}
+			}
+		}
+		elseif ($repo_type === "duplicati") {
+			// update own cache
+			$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+			$repo_info->updateCacheRecursive($force_archive_infos ?? false);
+		}
+		else {
+			throw new ErrorException("invalid repo type");
 		}
 	}
 	
@@ -211,14 +231,14 @@ class RepositoryCtrl
 		$data = json_decode($f3->get("POST.data"), true);
 		
 		// push into cache
-		$repo_info = new RepositoryInfoMdl($user_name, $repo_name, $server_name);
+		$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
 		$repo_info->pushIntoCache($data ["repo_info"]);
 		
-		$repo_list = new RepositoryListMdl($repo_info);
+		$repo_list = new BorgRepositoryListMdl($repo_info);
 		$repo_list->pushIntoCache($data ["repo_list"]);
 		
 		foreach($data ["archives_info"] as $archive_name => $archive) {
-			$archive_info = new ArchiveInfoMdl($repo_info, $archive_name);
+			$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
 			$archive_info->pushIntoCache($archive);
 		}
 	}
