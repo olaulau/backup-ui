@@ -101,12 +101,11 @@ foreach ($repos_borg as $user_name => $user) {
 					$start = $last_archive ["archives"] [0] ["start"];
 					$dt = new DateTimeImmutable($start);
 					$bg_color = Stuff::start_delay_bg_color($dt);
-					$start_formated = $dt->format("d/m H:i");
 					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
 					$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $start);
 					$total [$server_name] ["last_archive_original_size"] += $original_size;
 					?>
-					<td class="text-end bg-<?=$bg_color?>"><?= $start_formated ?></td>
+					<td class="text-end bg-<?=$bg_color?>" title="<?= $dt->format("d/m/Y H:i:s") ?>"><?= $dt->format("d/m H:i") ?></td>
 					<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($original_size)) ?></td>
 					<?php
 				}
@@ -141,7 +140,9 @@ foreach ($repos_borg as $user_name => $user) {
 						?>
 						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
 						<th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th>
-						<th class="text-end"><?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?></th>
+						<th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
+							<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
+						</th>
 						<th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th>
 						<?php
 					}
@@ -203,7 +204,6 @@ foreach ($repos_duplicati as $user_name => $user) {
 		
 		// to make a link to the repo on this server
 		$local_server_name = Stuff::get_local_server_name();
-		// $local_server = $servers [$local_server_name];
 		$repo = $data_duplicati [$local_server_name] [$user_name] [$repo_name]; 
 		?>
 			<td>
@@ -212,10 +212,9 @@ foreach ($repos_duplicati as $user_name => $user) {
 			</td>
 		<?php
 		foreach (array_keys($servers) as $server_name) {
-			// $repo = $data_duplicati [$server_name] [$user_name] [$repo_name];
-			
 			$repo_info = new DuplicatiRepositoryInfoMdl ($user_name, $repo_name, $server_name);
 			$repo_size = $repo_info->getValueFromCache();
+			$total [$server_name] ["repo_size"] += $repo_size;
 			if(!empty($repo_size)) {
 				?>
 				<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($repo_size)) ?></td>
@@ -234,9 +233,11 @@ foreach ($repos_duplicati as $user_name => $user) {
 			if(!empty($filesets)) {
 				$dt = $filesets[0];
 				$bg_color = Stuff::start_delay_bg_color($dt);
+				$total [$server_name] ["archive_count"] += count($filesets);
+				$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $dt->format("Y-m-d H:i:s"));
 				?>
 				<td class="text-end"><?= count($filesets) ?></td>
-				<td class="text-end bg-<?= $bg_color ?>"><?= $dt->format("d/m H:i") ?></td>
+				<td class="text-end bg-<?= $bg_color ?>" title="<?= $dt->format("d/m/Y H:i:s") ?>"><?= $dt->format("d/m H:i") ?></td>
 				<?php
 			}
 			else {
@@ -265,7 +266,9 @@ foreach ($repos_duplicati as $user_name => $user) {
 						?>
 						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
 						<th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th>
-						<th class="text-end"><?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?></th>
+						<th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
+							<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
+						</th>
 						<th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th>
 						<?php
 					}

@@ -44,6 +44,7 @@ echo ""
 ssh $user_name@$server_name "chmod -R 2770 ~/borg/$repo_name/"
 echo ""
 
+####TODO borg-ui -> backup-ui
 # query borg-ui to update his cache for this repo
 echo "pushing cache update"
 #url="$server_name/borg-ui/cache/update/borg/$user_name/$repo_name"

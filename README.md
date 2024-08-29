@@ -18,6 +18,7 @@ display borg backups (borg & duplicati) informations so that you can easilly che
 <br/>
 <br/>
 
+
 # install
 ## requirements
 - git
@@ -63,6 +64,7 @@ just go to ```https://<host>/backup/repositories``` with your browser
 <br/>
 <br/>
 
+
 # borg client script
 do all the stuff that client should do :
 - run borgmatic commands
@@ -84,6 +86,19 @@ crontab -e
 
 <br/>
 <br/>
+
+
+# duplicati update push
+either :  
+- ask for the duplicati gui (client) to query a cache update of his repo on the server  
+	```send-http-url='https://<host>/backup-ui/cache/update/duplicati/<user_name>/<repo_name>'```
+- query a cache update in a cron every night  
+	```
+	crontab -e
+		12	5	*	*	*	curl https://<host>/backup-ui/cache/update/duplicati/<user_name>/<repo_name>
+		12	5	*	*	*	curl https://<host>/backup-ui_DEV/cache/update/duplicati/<user_name>/<repo_name>
+	```
+	
 
 # technical informations
 - all data are locally stored in a file-cache, so thatweb display are fast
