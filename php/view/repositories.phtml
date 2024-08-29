@@ -24,7 +24,7 @@ require_once __DIR__.'/layout/header.phtml';
 		<h1> <?= $page ["title"] ?> </h1>
 		
 		<!-- borg -->
-		<table class="table table-bordered table-hover my-3">
+		<table class="table table-sm table-bordered table-hover my-3">
 			<tr>
 				<th class="text-start">
 					<img src="<?= $BASE . "/assets/borg.svg" ?>" style="max-height: 2rem;" title="borg" />
@@ -63,12 +63,12 @@ require_once __DIR__.'/layout/header.phtml';
 			</tr>
 
 <?php
-foreach ($repos_borg as $user_name => $user) {
+foreach ($repos_borg ?? [] as $user_name => $user) {
 	$user_label = $users [$user_name];
 	$total ["user_count"] ++;
 	?>
 		<tr>
-			<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
+			<td rowspan="<?= count($user) ?>"><?= $conf ["users"] [$user_name] ?></td>
 	<?php
 	foreach ($user as $repo_name => $repo_label) {
 		$total ["repo_count"] ++;
@@ -191,12 +191,12 @@ foreach ($repos_borg as $user_name => $user) {
 			</tr>
 
 <?php
-foreach ($repos_duplicati as $user_name => $user) {
+foreach ($repos_duplicati ?? [] as $user_name => $user) {
 	$user_label = $users [$user_name];
 	$total ["user_count"] ++;
 	?>
 		<tr>
-			<td rowspan="<?= count($user) ?>" class="align-middle"><?= $conf ["users"] [$user_name] ?></td>
+			<td rowspan="<?= count($user) ?>"><?= $conf ["users"] [$user_name] ?></td>
 	<?php
 	foreach ($user as $repo_name => $repo) {
 		$total ["repo_count"] ++;
@@ -204,7 +204,7 @@ foreach ($repos_duplicati as $user_name => $user) {
 		
 		// to make a link to the repo on this server
 		$local_server_name = Stuff::get_local_server_name();
-		$repo = $data_duplicati [$local_server_name] [$user_name] [$repo_name]; 
+		// $repo = $data_duplicati [$local_server_name] [$user_name] [$repo_name]; ///////////////////////
 		?>
 			<td>
 				<a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
