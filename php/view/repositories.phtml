@@ -29,7 +29,7 @@ require_once __DIR__.'/layout/header.phtml';
 				<th class="text-start">
 					<img src="<?= $BASE . "/assets/borg.svg" ?>" style="max-height: 2rem;" title="borg" />
 				</th>
-				<th class="text-end">
+				<th class="text-end align-middle">
 					server
 				</th>
 			<?php
@@ -41,7 +41,7 @@ require_once __DIR__.'/layout/header.phtml';
 				$total [$server_name] ["last_archive_datetime"] = "9999";
 				$total [$server_name] ["last_archive_original_size"] = 0;
 				?>
-				<th colspan="4" class="text-center"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
+				<th colspan="4" class="text-center align-middle"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
 				<?php
 			}
 			?>
@@ -148,16 +148,17 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 					}
 					?>
 				</tr>
-		<!-- </table> -->
-
-		
+				
+				
+				<tr class="border border-0"><td class="border border-0">&nbsp;</td></tr> <!-- table empty invisible row -->
+				
+				
 		<!-- duplicati -->
-		<!-- <table class="table table-bordered table-hover my-3"> -->
 			<tr>
 				<th class="text-start">
 					<img src="<?= $BASE . "/assets/duplicati.svg" ?>" style="max-height: 2rem;" title="duplicati" />
 				</th>
-				<th class="text-end">
+				<th class="text-end align-middle">
 					server
 				</th>
 			<?php
@@ -169,7 +170,7 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 				$total [$server_name] ["last_archive_datetime"] = "9999";
 				$total [$server_name] ["last_archive_original_size"] = 0;
 				?>
-				<th colspan="4" class="text-center"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
+				<th colspan="4" class="text-center align-middle"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
 				<?php
 			}
 			?>
