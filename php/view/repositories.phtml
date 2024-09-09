@@ -41,7 +41,9 @@ require_once __DIR__.'/layout/header.phtml';
 				$total [$server_name] ["last_archive_datetime"] = "9999";
 				$total [$server_name] ["last_archive_original_size"] = 0;
 				?>
-				<th colspan="4" class="text-center align-middle"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories"><?= $server_label ?></a></th>
+				<th colspan="4" class="text-center align-middle">
+					<a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories" target="_self"><?= $server_label ?></a>
+				</th>
 				<?php
 			}
 			?>
