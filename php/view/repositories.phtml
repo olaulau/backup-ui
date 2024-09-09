@@ -2,6 +2,7 @@
 use model\DuplicatiRepositoryListMdl;
 use service\Stuff;
 
+
 require_once __DIR__.'/layout/head.phtml';
 ?>
 
@@ -70,9 +71,9 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 		<tr>
 			<td rowspan="<?= count($user) ?>"><?= $conf ["users"] [$user_name] ?></td>
 	<?php
-	foreach ($user as $repo_name => $repo_label) {
+	foreach ($user as $repo_name => $repo) {
 		$total ["repo_count"] ++;
-		// $repo_label = $conf ["repos"] ["borg"] [$user_name] [$repo_name]; //TODO usefull ?
+		$repo_label = $conf ["repos"] ["borg"] [$user_name] [$repo_name] ["label"];
 		
 		// to make a link to the repo on this server
 		$local_server_name = Stuff::get_local_server_name();

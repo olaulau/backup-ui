@@ -1,6 +1,8 @@
 <?php
 namespace model;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use ErrorException;
 use service\Stuff;
 
@@ -61,13 +63,57 @@ class DuplicatiRepositoryListMdl extends AbstractCachedValueMdl
 		foreach($filesets_strings as $filesets_str) {
 			$res = preg_match('|(\d+)\t: (((\d{2})/(\d{2})/(\d{4})) ((\d{2}):(\d{2}):(\d{2})))|', $filesets_str, $matches);
 			if($res === false) {
-				throw new ErrorException("regex didn't match");
+				throw new ErrorException("regex error");
 			}
-			$archive_number = $matches[1];
-			$archive_dt_str = $matches[2];
-			$filesets [$archive_number] = $archive_dt_str;
+			if($res === 1) {
+				$archive_number = $matches[1];
+				$archive_dt_str = $matches[2];
+				$filesets [$archive_number] = $archive_dt_str;
+			}
 		}
 		return $filesets;
+	}
+	
+	
+	/**
+	 * @implements RepositoryListInterface
+	 */
+	public function get_archives_names() : array
+	{
+		$cache_value = $this->getValueFromCache();
+		if(empty($cache_value)) {
+			return [];
+		}
+		return array_keys($cache_value);
+	}
+	
+	
+	/**
+	 * @implements RepositoryListInterface
+	 * could be common
+	 */
+	public function get_last_archive_name () : string
+	{
+		return "0";
+	}
+	
+	
+	/**
+	 * @implements RepositoryListInterface
+	 */
+	public function get_archive_date (string $archive_name) : ?DateTimeInterface
+	{
+		$cache_value = $this->getValueFromCache();
+		if(empty($cache_value)) {
+			throw new ErrorException("empty cache for this repo list");
+		}
+		
+		$dt_str = $cache_value [$archive_name];
+		if(empty($dt_str)) {
+			return null;
+		}
+		$dt = DateTimeImmutable::createFromFormat(self::date_time_format, $dt_str);
+		return $dt;
 	}
 	
 }
