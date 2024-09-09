@@ -34,32 +34,29 @@ var js_data = <?= json_encode($js_data) ?>
 	</tr>
 	
 	<?php
-	foreach ($archives as $archive)
-	{
-		$dt = new DateTime($archive["start"]);
-		$start =  $dt->format("d/m/Y H:i:s");
+	foreach ($archives_names as $archive_name) {
+		$dt = $repo_list->get_archive_date($archive_name);
+		$start = $dt->format("d/m/Y H:i:s");
 		
-		$archive_info_value = $archives_info [$archive["name"]];
-		if(!empty($archive_info_value))
-		{
-			$archive_info_value = $archive_info_value ["archives"][0];
+		$archive_info = $archives_info [$archive_name];
+		if(!empty($archive_info)) {
+			$archive_info = $archive_info ["archives"] [0];
 			date_default_timezone_set('UTC');
-			$duration = date('H:i:s', round($archive_info_value["duration"]));
+			$duration = date('H:i:s', round($archive_info ["duration"]));
 			?>
 			<tr>
-				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
+				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive_name], []) ?>"><?= $archive_name ?></a></td>
 				<td><?= $start ?></td>
 				<td><?= $duration ?></td>
-				<td><?= ByteUnits\Binary::bytes($archive_info_value["stats"]["original_size"])->format("GiB", " ") ?></td>
-				<td><?= ByteUnits\Binary::bytes($archive_info_value["stats"]["compressed_size"])->format("GiB", " ") ?></td>
+				<td><?= ByteUnits\Binary::bytes($archive_info ["stats"] ["original_size"])->format("GiB", " ") ?></td>
+				<td><?= ByteUnits\Binary::bytes($archive_info ["stats"] ["compressed_size"])->format("GiB", " ") ?></td>
 			</tr>
 			<?php
 		}
-		else
-		{ // rare case when repo cached info references a non existing archive (could happen when archive cache expires and no backup from a long time)
+		else {
 			?>
 			<tr>
-				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive["name"]], []) ?>"><?= $archive["name"] ?></a></td>
+				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive_name], []) ?>"><?= $archive_name ?></a></td>
 				<td><?= $start ?></td>
 				<td></td>
 				<td></td>

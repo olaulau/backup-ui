@@ -115,36 +115,50 @@ class RepositoryCtrl
 	
 	public static function viewGET (Base $f3) : void
 	{
+		// params
+		$repo_type = $f3->get("PARAMS.repo_type");
+		$f3->set("repo_type", $repo_type);
+		
 		$user_name = $f3->get("PARAMS.user_name");
 		$user_label = $f3->get("conf.users.$user_name");
 		$f3->set("user_label", $user_label);
+		
 		$repo_name = $f3->get("PARAMS.repo_name");
 		$f3->set("repo_name", $repo_name);
-		$repo_label = $f3->get("conf.repos.borg.$user_name.$repo_name");
+		
+		$repo_label = $f3->get("conf.repos.$repo_type.$user_name.$repo_name");
 		$f3->set("repo_label", $repo_label);
 		
+		// get data
 		$local_server_name = Stuff::get_local_server_name();
 		$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
-		$repo_list = new BorgRepositoryListMdl($repo_info);
-		$repo_list_value = $repo_list->getValue();
 		
-		$archives = array_reverse($repo_list_value["archives"]);
-		$f3->set("archives", $archives);
+		$repo_list = new BorgRepositoryListMdl($repo_info);
+		$f3->set("repo_list", $repo_list);
+		
+		$archives_names = $repo_list->get_archives_names();
+		$f3->set("archives_names", $archives_names);
+		
 		
 		$js_data = [];
 		$archives_info = [];
-		foreach ($archives as $archive) {
-			$dt = new \DateTime($archive["start"]);
+		foreach ($archives_names as $archive_name) {
+			$dt = $repo_list->get_archive_date($archive_name);
+			if(empty($dt)) {
+				throw new ErrorException("empty datetime");
+			}
 			$js_data [] = $dt->getTimestamp();
 			
-			$archive_info = new BorgArchiveInfoMdl($repo_info, $archive["name"]);
-			$archive_info_value = $archive_info->getValue();
-			$archives_info [ $archive["name"] ] = $archive_info_value;
+			$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
+			$archive_info_value = $archive_info->getValueFromCache();
+			if(!empty($archive_info_value)) {
+				$archives_info [ $archive_name ] = $archive_info_value;
+			}
 		}
 		$f3->set("js_data", $js_data);
 		$f3->set("archives_info", $archives_info);
 		
-		$page ["title"] = "archives ( ".count($archives_info) ." )";
+		$page ["title"] = "archives ( ".count($archives_names) ." )";
 		$page ["breadcrumbs"] = [
 			[
 				"label"	=> $f3->get("conf.hostname_override") ?? $f3->get("HOST"),
@@ -153,6 +167,10 @@ class RepositoryCtrl
 			[
 				"label"	=> "repositories",
 				"url"	=> $f3->get("BASE") . $f3->alias("repositories"),
+			],
+			[
+				"label"	=> $repo_type,
+				"url"	=> null,
 			],
 			[
 				"label"	=> $user_label,

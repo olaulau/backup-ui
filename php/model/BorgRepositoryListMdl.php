@@ -1,10 +1,12 @@
 <?php
 namespace model;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use ErrorException;
 
 
-class BorgRepositoryListMdl extends AbstractCachedValueMdl
+class BorgRepositoryListMdl extends AbstractCachedValueMdl implements RepositoryListInterface
 {
 	
 	private BorgRepositoryInfoMdl $repo_info;
@@ -46,6 +48,56 @@ class BorgRepositoryListMdl extends AbstractCachedValueMdl
 			throw new ErrorException($output);
 		}
 		return $archives_list;
+	}
+	
+	
+	/**
+	 * @implements RepositoryListInterface
+	 */
+	public function get_archives_names() : array
+	{
+		$cache_value = $this->getValueFromCache();
+		if(empty($cache_value)) {
+			return [];
+		}
+		
+		$archives = $cache_value ["archives"];
+		$archives = array_reverse($archives);
+		$res = array_column($archives, "name");
+		return $res;
+	}
+	
+	
+	/**
+	 * @implements RepositoryListInterface
+	 */
+	public function get_last_archive_name () : string
+	{
+		$archives_names = $this->get_archives_names();
+		if(empty($archives_names)) {
+			return "";
+		}
+		return $archives_names [0];
+	}
+	
+	
+	/**
+	 * @implements RepositoryListInterface
+	 */
+	public function get_archive_date (string $archive_name) : ?DateTimeInterface
+	{
+		$cache_value = $this->getValueFromCache();
+		if(empty($cache_value)) {
+			throw new ErrorException("empty cache for this repo list");
+		}
+		
+		$archives = $cache_value ["archives"];
+		$archives_by_name = array_combine(array_column($archives, "name"), $archives);
+		$dt_str = $archives_by_name [$archive_name] ["start"] ?? null;
+		if(empty($dt_str)) {
+			return null;
+		}
+		return new DateTimeImmutable($dt_str);
 	}
 	
 }
