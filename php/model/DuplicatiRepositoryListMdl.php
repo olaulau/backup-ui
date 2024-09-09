@@ -1,7 +1,6 @@
 <?php
 namespace model;
 
-use DateTimeImmutable;
 use ErrorException;
 use service\Stuff;
 
@@ -10,6 +9,8 @@ class DuplicatiRepositoryListMdl extends AbstractCachedValueMdl
 {
 	
 	private DuplicatiRepositoryInfoMdl $repo_info;
+	
+	const date_time_format = "m/d/Y H:i:s";
 	
 	
 	public function __construct (DuplicatiRepositoryInfoMdl $repo_info)
@@ -62,7 +63,9 @@ class DuplicatiRepositoryListMdl extends AbstractCachedValueMdl
 			if($res === false) {
 				throw new ErrorException("regex didn't match");
 			}
-			$filesets [$matches[1]] = DateTimeImmutable::createFromFormat("m/d/Y H:i:s", $matches[2]);
+			$archive_number = $matches[1];
+			$archive_dt_str = $matches[2];
+			$filesets [$archive_number] = $archive_dt_str;
 		}
 		return $filesets;
 	}

@@ -7,6 +7,7 @@ use model\BorgArchiveInfoMdl;
 use model\BorgRepositoryInfoMdl;
 use model\BorgRepositoryListMdl;
 use model\DuplicatiRepositoryInfoMdl;
+use model\DuplicatiRepositoryListMdl;
 use service\Stuff;
 
 
@@ -176,6 +177,7 @@ class RepositoryCtrl
 		$repo_name = $f3->get("PARAMS.repo_name");
 		
 		$local_server_name = Stuff::get_local_server_name();
+		$data = [];
 		if($repo_type === "borg") {
 			// update own cache
 			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
@@ -193,31 +195,48 @@ class RepositoryCtrl
 				$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
 				$data ["archives_info"] [$archive_name] = $archive_info->getValueFromCache();
 			}
-			
-			// push data to other servers
-			$local_server_name = Stuff::get_local_server_name();
-			$servers = $f3->get("conf.servers");
-			foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
-				if($server_remote === true) { // don't push to yourself
-					$server_url = rtrim($server_url, "/");
-					$url = $server_url . $f3->alias("cache_push", ["server_name" => $local_server_name, "user_name" => $user_name, "repo_name" => $repo_name]);
-					$ch = curl_init();
-					curl_setopt($ch, CURLOPT_URL, $url);
-					curl_setopt($ch, CURLOPT_HEADER, 0);
-					curl_setopt($ch, CURLOPT_POST, 1);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, ["data" => json_encode($data)]);
-					curl_exec($ch);
-					curl_close($ch);
-				}
-			}
 		}
 		elseif ($repo_type === "duplicati") {
 			// update own cache
 			$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
 			$repo_info->updateCacheRecursive($force_archive_infos ?? false);
+			
+			// prepare data to be sent
+			$repo_list = new DuplicatiRepositoryListMdl($repo_info);
+			$data = [
+				"repo_info" =>		$repo_info->getValueFromCache(),
+				"repo_list" =>		$repo_list->getValueFromCache(),
+				"archives_info" =>	[],
+			];
+			// foreach($data ["repo_list"] ["archives"] as $archive) {
+			// 	$archive_name = $archive ["archive"];
+			// 	$archive_info = new DuplicatiArchiveInfoMdl($repo_info, $archive_name);
+			// 	$data ["archives_info"] [$archive_name] = $archive_info->getValueFromCache();
+			// }
 		}
 		else {
 			throw new ErrorException("invalid repo type");
+		}
+		
+		// push data to other servers
+		$local_server_name = Stuff::get_local_server_name();
+		$servers = $f3->get("conf.servers");
+		foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
+			if($server_remote === true) { // don't push to yourself
+				$server_url = rtrim($server_url, "/");
+				$url = $server_url . $f3->alias("cache_push", ["server_name" => $local_server_name, "user_name" => $user_name, "repo_name" => $repo_name]);
+				// echo "POST $url <br/>" . PHP_EOL;
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_HEADER, 0);
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, ["data" => json_encode($data)]);
+				$res = curl_exec($ch);
+				if($res === false) {
+					echo "curl error #" . curl_errno($ch) . " : " . curl_error($ch) . "<br/>" . PHP_EOL;
+				}
+				curl_close($ch);
+			}
 		}
 	}
 	
@@ -225,21 +244,44 @@ class RepositoryCtrl
 	public static function cachePushPOST (Base $f3) : void
 	{
 		// params & data
+		$repo_type = $f3->get("PARAMS.repo_type");
 		$server_name = $f3->get("PARAMS.server_name");
 		$user_name = $f3->get("PARAMS.user_name");
 		$repo_name = $f3->get("PARAMS.repo_name");
 		$data = json_decode($f3->get("POST.data"), true);
 		
 		// push into cache
-		$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
-		$repo_info->pushIntoCache($data ["repo_info"]);
-		
-		$repo_list = new BorgRepositoryListMdl($repo_info);
-		$repo_list->pushIntoCache($data ["repo_list"]);
-		
-		foreach($data ["archives_info"] as $archive_name => $archive) {
-			$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
-			$archive_info->pushIntoCache($archive);
+		if($repo_type === "borg") {
+			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
+			$repo_info->pushIntoCache($data ["repo_info"]);
+			
+			$repo_list = new BorgRepositoryListMdl($repo_info);
+			$repo_list->pushIntoCache($data ["repo_list"]);
+			
+			foreach($data ["archives_info"] as $archive_name => $archive) {
+				$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
+				$archive_info->pushIntoCache($archive);
+			}
+		}
+		elseif($repo_type === "duplicati") {
+			///////////////////
+			// $data ["repo_info"]
+			// $data ["repo_list"]
+			// $data ["archives_info"]
+			
+			$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $server_name);
+			$repo_info->pushIntoCache($data ["repo_info"]);
+			
+			$repo_list = new DuplicatiRepositoryListMdl($repo_info);
+			$repo_list->pushIntoCache($data ["repo_list"]);
+			
+			// foreach($data ["archives_info"] as $archive_name => $archive) {
+			// 	$archive_info = new DuplicatiArchiveInfoMdl($repo_info, $archive_name);
+			// 	$archive_info->pushIntoCache($archive);
+			// }
+		}
+		else {
+			throw new ErrorException("unknown repo type");
 		}
 	}
 	

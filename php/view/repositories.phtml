@@ -99,13 +99,13 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 				$last_archive = $repo ["last_archive"];
 				if(!empty($last_archive)) {
 					$start = $last_archive ["archives"] [0] ["start"];
-					$dt = new DateTimeImmutable($start);
-					$bg_color = Stuff::start_delay_bg_color($dt);
+					$last_archive_dt = new DateTimeImmutable($start);
+					$bg_color = Stuff::start_delay_bg_color($last_archive_dt);
 					$original_size = $last_archive ["archives"] [0] ["stats"] ["original_size"];
 					$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $start);
 					$total [$server_name] ["last_archive_original_size"] += $original_size;
 					?>
-					<td class="text-end bg-<?=$bg_color?>" title="<?= $dt->format("d/m/Y H:i:s") ?>"><?= $dt->format("d/m H:i") ?></td>
+					<td class="text-end bg-<?=$bg_color?>" title="<?= $last_archive_dt->format("d/m/Y H:i:s") ?>"><?= $last_archive_dt->format("d/m H:i") ?></td>
 					<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($original_size)) ?></td>
 					<?php
 				}
@@ -232,13 +232,14 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 			$repo_list = new DuplicatiRepositoryListMdl($repo_info);
 			$filesets = $repo_list->getValueFromCache();
 			if(!empty($filesets)) {
-				$dt = $filesets[0];
-				$bg_color = Stuff::start_delay_bg_color($dt);
+				$last_archive_dt_str = $filesets[0];
+				$last_archive_dt = DateTimeImmutable::createFromFormat(DuplicatiRepositoryListMdl::date_time_format, $last_archive_dt_str);
+				$bg_color = Stuff::start_delay_bg_color($last_archive_dt);
 				$total [$server_name] ["archive_count"] += count($filesets);
-				$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $dt->format("Y-m-d H:i:s"));
+				$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $last_archive_dt->format("Y-m-d H:i:s"));
 				?>
 				<td class="text-end"><?= count($filesets) ?></td>
-				<td class="text-end bg-<?= $bg_color ?>" title="<?= $dt->format("d/m/Y H:i:s") ?>"><?= $dt->format("d/m H:i") ?></td>
+				<td class="text-end bg-<?= $bg_color ?>" title="<?= $last_archive_dt->format("d/m/Y H:i:s") ?>"><?= $last_archive_dt->format("d/m H:i") ?></td>
 				<?php
 			}
 			else {
