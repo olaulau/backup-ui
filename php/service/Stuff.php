@@ -45,7 +45,7 @@ class Stuff
 		// calculate delay
 		$now = new DateTimeImmutable();
 		$di = $dt->diff($now);
-		$delay_days = $di->d;
+		$delay_days = $di->days;
 		if($delay_days < 0) {
 			throw new ErrorException("future archive");
 		}
