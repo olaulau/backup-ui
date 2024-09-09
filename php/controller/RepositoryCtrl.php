@@ -120,6 +120,7 @@ class RepositoryCtrl
 		$f3->set("repo_type", $repo_type);
 		
 		$user_name = $f3->get("PARAMS.user_name");
+		$f3->set("user_name", $user_name);
 		$user_label = $f3->get("conf.users.$user_name");
 		
 		$repo_name = $f3->get("PARAMS.repo_name");
@@ -201,16 +202,27 @@ class RepositoryCtrl
 	
 	public static function archiveGET (Base $f3) : void
 	{
+		// params
+		$repo_type = $f3->get("PARAMS.repo_type");
 		$user_name = $f3->get("PARAMS.user_name");
 		$repo_name = $f3->get("PARAMS.repo_name");
 		$archive_name = $f3->get("PARAMS.archive_name");
+		
+		// get conf
 		$repo_label = $f3->get("conf.repos.borg.$repo_name.label");
 		$f3->set("repo_label", $repo_label);
-		
 		$local_server_name = Stuff::get_local_server_name();
-		$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
-		$arch_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
-		$arch_info_value = $arch_info->getValue();
+		
+		// get data
+		if($repo_type === "borg") {
+			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+			$arch_info = new BorgArchiveInfoMdl($repo_info, $archive_name);
+			$arch_info_value = $arch_info->getValueFromCache();
+		}
+		elseif($repo_type === "duplicati") {
+			//TODO
+			$arch_info_value = null;
+		}
 		
 		echo "<pre>";
 		ini_set('xdebug.var_display_max_depth', 10);

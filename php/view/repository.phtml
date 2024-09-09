@@ -39,13 +39,14 @@ var js_data = <?= json_encode($js_data) ?>
 		$start = $dt->format("d/m/Y H:i:s");
 		
 		$archive_info = $archives_info [$archive_name];
+		$archive_url = $BASE . $f3->alias("archive", ["repo_type" => $repo_type, "user_name" => $user_name, "repo_name" => $repo_name, "archive_name" => $archive_name], []);
 		if(!empty($archive_info)) {
 			$archive_info = $archive_info ["archives"] [0];
 			date_default_timezone_set('UTC');
 			$duration = date('H:i:s', round($archive_info ["duration"]));
 			?>
 			<tr>
-				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive_name], []) ?>"><?= $archive_name ?></a></td>
+				<td><a href="<?= $archive_url ?>"><?= $archive_name ?></a></td>
 				<td><?= $start ?></td>
 				<td><?= $duration ?></td>
 				<td><?= ByteUnits\Binary::bytes($archive_info ["stats"] ["original_size"])->format("GiB", " ") ?></td>
@@ -56,11 +57,11 @@ var js_data = <?= json_encode($js_data) ?>
 		else {
 			?>
 			<tr>
-				<td><a href="<?= $BASE . $f3->alias("archive", ["repo_name" => $repo_name, "archive_name" => $archive_name], []) ?>"><?= $archive_name ?></a></td>
+				<td><a href="<?= $archive_url ?>" class="pe-none text-decoration-none text-reset"><?= $archive_name ?></a></td>
 				<td><?= $start ?></td>
-				<td></td>
-				<td></td>
-				<td></td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td>&nbsp;</td>
 			</tr>
 			<?php
 		}
