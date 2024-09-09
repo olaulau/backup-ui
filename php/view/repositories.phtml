@@ -1,5 +1,4 @@
 <?php
-
 use model\DuplicatiRepositoryInfoMdl;
 use model\DuplicatiRepositoryListMdl;
 use service\Stuff;
@@ -82,7 +81,7 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 		$repo = $data_borg [$local_server_name] [$user_name] [$repo_name]; 
 		?>
 			<td>
-				<a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
+				<a href="<?= $BASE . $f3->alias("repository", ["repo_type" => "borg", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
 					class="<?= empty($repo ["list"]) ? "text-body text-decoration-none pe-none" : "" ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a>
 			</td>
 		<?php
@@ -207,20 +206,20 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 		
 		// to make a link to the repo on this server
 		$local_server_name = Stuff::get_local_server_name();
-		// $repo = $data_duplicati [$local_server_name] [$user_name] [$repo_name]; ///////////////////////
+		$repo = $data_duplicati [$local_server_name] [$user_name] [$repo_name];
 		?>
 			<td>
-				<a href="<?= $BASE . $f3->alias("repository", ["user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
+				<a href="<?= $BASE . $f3->alias("repository", ["repo_type" => "duplicati", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
 					class="<?= empty($repo ["list"]) ? "text-body text-decoration-none pe-none" : "" ?>" title="<?= $repo_name ?>"><?= $repo_label ?></a>
 			</td>
 		<?php
 		foreach (array_keys($servers) as $server_name) {
-			$repo_info = new DuplicatiRepositoryInfoMdl ($user_name, $repo_name, $server_name);
-			$repo_size = $repo_info->getValueFromCache();
-			$total [$server_name] ["repo_size"] += $repo_size;
-			if(!empty($repo_size)) {
+			$repo = $data_duplicati [$server_name] [$user_name] [$repo_name];
+			$repo_info = $repo ["info"];
+			$total [$server_name] ["repo_size"] += $repo_info;
+			if(!empty($repo_info)) {
 				?>
-				<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($repo_size)) ?></td>
+				<td class="text-end"><?= stuff::float_formater(Stuff::convert_size($repo_info)) ?></td>
 				<?php
 			}
 			else {
@@ -228,19 +227,16 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 				<td>&nbsp;</td>
 				<?php
 			}
-			?>
 			
-			<?php
-			$repo_list = new DuplicatiRepositoryListMdl($repo_info);
-			$filesets = $repo_list->getValueFromCache();
-			if(!empty($filesets)) {
-				$last_archive_dt_str = $filesets[0];
+			$repo_list = $repo ["list"];
+			if(!empty($repo_list)) {
+				$last_archive_dt_str = $repo_list[0];
 				$last_archive_dt = DateTimeImmutable::createFromFormat(DuplicatiRepositoryListMdl::date_time_format, $last_archive_dt_str);
 				$bg_color = Stuff::start_delay_bg_color($last_archive_dt);
-				$total [$server_name] ["archive_count"] += count($filesets);
+				$total [$server_name] ["archive_count"] += count($repo_list);
 				$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $last_archive_dt->format("Y-m-d H:i:s"));
 				?>
-				<td class="text-end"><?= count($filesets) ?></td>
+				<td class="text-end"><?= count($repo_list) ?></td>
 				<td class="text-end bg-<?= $bg_color ?>" title="<?= $last_archive_dt->format("d/m/Y H:i:s") ?>"><?= $last_archive_dt->format("d/m H:i") ?></td>
 				<?php
 			}
