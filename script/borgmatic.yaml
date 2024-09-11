@@ -1,39 +1,31 @@
-location:
-    source_directories:
-        - /PATH
-    repositories:
-        - ssh://USER@HOST/home/USER_NAME/borg/REP_NAME/
+source_directories:
+    - /PATH
+repositories:
+    - ssh://USER@HOST/home/USER_NAME/borg/REP_NAME/
 
-    (pour les installation spécifiques comme synology)
-    remote_path: /usr/local/bin/borg
+(pour les installation spécifiques comme synology)
+remote_path: /usr/local/bin/borg
 
-storage:
-    relocated_repo_access_is_ok: true
+relocated_repo_access_is_ok: true
+unknown_unencrypted_repo_access_is_ok: true
+check_i_know_what_i_am_doing: true
 
-    unknown_unencrypted_repo_access_is_ok: true
+keep_within: 24H
+keep_hourly: 24
+keep_daily: 5
+keep_weekly: 4
+keep_monthly: 11
+keep_yearly: 9
 
-retention:
-    keep_within: 24H
+checks:
+    - name: disabled
 
-    keep_hourly: 24
+    - name: repository
+        frequency: 1 month
+        
+    - name: extract
+        frequency: 2 weeks
+check_last: 3
 
-    keep_daily: 5
-
-    keep_weekly: 4
-
-    keep_monthly: 11
-
-    keep_yearly: 9
-
-consistency:
-    checks:
-        - name: disabled
-
-        - name: repository
-          frequency: 1 month
-
-
-
-
-check_last: 3 ???
---extra-option pour repair ???
+extra_borg_options:
+    check: --repair
