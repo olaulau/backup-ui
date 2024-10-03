@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "chart.js": "^4.3.0"
+	  "@popperjs/core": "^2.11.7",
+      "chart.js": "^4.3.0"
   }
 }

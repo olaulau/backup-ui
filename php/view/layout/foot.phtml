@@ -1,7 +1,14 @@
 	<script src="<?= $BASE ?>/vendor/components/jquery/jquery.min.js"></script>
-	<script src="<?= $BASE ?>/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="<?= $BASE ?>/vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="<?= $BASE ?>/vendor/components/jqueryui/jquery-ui.min.js"></script>
-	<!--     <script src="../../assets/js/vendor/popper.min.js"></script> -->
+	
+	<script>
+		// initialize popovers
+		$(function(){
+			const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+			const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+		})
+	</script>
 
 </body>
 </html>
