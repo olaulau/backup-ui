@@ -26,7 +26,7 @@ display borg backups (borg & duplicati) informations so that you can easilly che
 - (recommended) borgmatic on the client, if you use borg client script
 - duplicati-cli on the server
 - webserver (recommended Apache >= 2.4)
-- PHP (>= 7.4), composer
+- PHP (>= 7.4), php-curl, composer
 - npm
 
 ## compatibility
