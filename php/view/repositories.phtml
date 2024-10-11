@@ -41,8 +41,10 @@ require_once __DIR__.'/layout/header.phtml';
 				$total [$server_name] ["last_archive_datetime"] = "9999";
 				$total [$server_name] ["last_archive_original_size"] = 0;
 				?>
-				<th colspan="1" class="text-center align-middle">
-					<a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories" target="_self"><?= $server_label ?></a>
+				<th colspan="1" class="text-center align-middle" title="<?= $server_name ?>">
+					<a class="<?= $server_remote === false ? " pe-none text-decoration-none text-dark" : "d-block w-100 h-100" ?>" href="<?= $server_url ?>repositories" target="_self">
+						<?= $server_label ?>
+					</a>
 				</th>
 				<?php
 			}
@@ -67,7 +69,9 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 	$total ["user_count"] ++;
 	?>
 		<tr>
-			<td rowspan="<?= count($user) ?>"><?= $conf ["users"] [$user_name] ?></td>
+			<td rowspan="<?= count($user) ?>" title="<?= $user_name ?>">
+				<?= $conf ["users"] [$user_name] ?>
+			</td>
 	<?php
 	foreach ($user as $repo_name => $repo) {
 		$total ["repo_count"] ++;
@@ -173,7 +177,11 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 				$total [$server_name] ["last_archive_datetime"] = "9999";
 				$total [$server_name] ["last_archive_original_size"] = 0;
 				?>
-				<th colspan="1" class="text-center align-middle"><a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "" ?>" href="<?= $server_url ?>repositories" target="_self"><?= $server_label ?></a></th>
+				<th colspan="1" class="text-center align-middle" title="<?= $server_name ?>">
+					<a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "d-block w-100 h-100" ?>" href="<?= $server_url ?>repositories" target="_self">
+						<?= $server_label ?>
+					</a>
+				</th>
 				<?php
 			}
 			?>
@@ -197,7 +205,9 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 	$total ["user_count"] ++;
 	?>
 		<tr>
-			<td rowspan="<?= count($user) ?>"><?= $conf ["users"] [$user_name] ?></td>
+			<td rowspan="<?= count($user) ?>" title="<?= $user_name ?>">
+				<?= $conf ["users"] [$user_name] ?>
+			</td>
 		<?php
 		foreach ($user as $repo_name => $repo) {
 			$total ["repo_count"] ++;
