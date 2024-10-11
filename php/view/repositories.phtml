@@ -103,7 +103,7 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 					$total [$server_name] ["last_archive_original_size"] += $original_size;
 					?>
 					<td class="text-end bg-<?=$bg_color?>" title="<?= $last_archive_dt->format("d/m/Y H:i:s") ?>"
-						data-bs-toggle="popover" data-trigger="hover" data-bs-title="repo infos" data-bs-html="true". data-bs-content="
+						data-bs-toggle="popover" data-bs-trigger="hover" data-bs-title="repo infos" data-bs-html="true". data-bs-content="
 						total size : <?= stuff::float_formater(Stuff::convert_size($repo_size)) ?> <br/> 
 						# archives : <?= $archive_count ?> <br/>
 						last archive size : <?= stuff::float_formater(Stuff::convert_size($original_size)) ?>">
@@ -136,11 +136,11 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 					<?php
 					foreach (array_keys($servers) as $server_name) {
 						?>
-						<!-- <th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th> -->
+						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
 						<!-- <th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th> -->
-						<th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
+						<!-- <th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
 							<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
-						</th>
+						</th> -->
 						<!-- <th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th> -->
 						<?php
 					}
@@ -221,10 +221,9 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 				$total [$server_name] ["last_archive_datetime"] = min($total [$server_name] ["last_archive_datetime"], $last_archive_dt->format("Y-m-d H:i:s"));
 				?>
 				<td class="text-end bg-<?=$bg_color?>" title="<?= $last_archive_dt->format("d/m/Y H:i:s") ?>"
-						data-bs-toggle="popover" data-trigger="hover" data-bs-title="repo infos" data-bs-html="true". data-bs-content="
+						data-bs-toggle="popover" data-bs-trigger="hover" data-bs-title="repo infos" data-bs-html="true". data-bs-content="
 						total size : <?= stuff::float_formater(Stuff::convert_size($repo_info)) ?> <br/> 
-						# archives : <?= count($repo_list) ?> <br/>
-						last archive size : <?= stuff::float_formater(Stuff::convert_size($original_size)) ?>">
+						# archives : <?= count($repo_list) ?>">
 						<?= $last_archive_dt->format("d/m H:i") ?>
 					</td>
 				<?php
@@ -251,11 +250,11 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 					<?php
 					foreach (array_keys($servers) as $server_name) {
 						?>
-						<!-- <th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th> -->
+						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
 						<!-- <th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th> -->
-						<th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
+						<!-- <th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
 							<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
-						</th>
+						</th> -->
 						<!-- <th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th> -->
 						<?php
 					}
