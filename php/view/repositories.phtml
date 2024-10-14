@@ -113,7 +113,7 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 						# archives : <?= $archive_count ?> <br/>
 						last archive size : <?= stuff::float_formater(Stuff::convert_size($original_size)) ?>">
 						<a href="<?= $server_url . $f3->alias("repository", ["repo_type" => "borg", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
-							class="d-block w-100 h-100 text-decoration-none text-dark">
+							class="d-block w-100 h-100 text-decoration-none text-dark" target="_self">
 							<?= $last_archive_dt->format("d/m H:i") ?>
 						</a>
 					</td>
@@ -241,7 +241,7 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 						total size : <?= stuff::float_formater(Stuff::convert_size($repo_info)) ?> <br/> 
 						# archives : <?= count($repo_list) ?>">
 						<a href="<?= $server_url . $f3->alias("repository", ["repo_type" => "duplicati", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
-							class="d-block w-100 h-100 text-decoration-none text-dark">
+							class="d-block w-100 h-100 text-decoration-none text-dark" target="_self">
 							<?= $last_archive_dt->format("d/m H:i") ?>
 						</a>
 					</td>
