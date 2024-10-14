@@ -1,5 +1,5 @@
 # description
-display borg backups (borg & duplicati) informations so that you can easilly check your backups are running fine.
+display backups informations (borg & duplicati) so that you can easilly check your backups are running fine.
 
 <a href="doc/repositories.png"><img src="doc/repositories.png" width="600" title="repositories"></a> &nbsp; 
 <a href="doc/archives.png"><img src="doc/archives.png" width="600" title="archives"></a>
@@ -11,7 +11,7 @@ display borg backups (borg & duplicati) informations so that you can easilly che
 	- list repos and their details
 	- list archives and their details
 	- access raw archive informations
-- (coming soon) duplicati
+- duplicati
 	- repo disk usage size
 	- list archives (date)
 
@@ -23,7 +23,7 @@ display borg backups (borg & duplicati) informations so that you can easilly che
 ## requirements
 - git
 - borg (recent versions), on both client and server
-- (recommended) borgmatic on the client, if you use borg client script
+- (recommended) borgmatic on the client, if you use borg_client script
 - duplicati-cli on the server
 - webserver (recommended Apache >= 2.4)
 - PHP (>= 7.4), php-curl, composer
@@ -59,7 +59,7 @@ vim conf/conf.ini
 ```
 
 ## usage
-just go to ```https://<host>/backup/repositories``` with your browser
+just go to ```https://<host>/backup-ui/repositories``` with your browser
 
 <br/>
 <br/>
