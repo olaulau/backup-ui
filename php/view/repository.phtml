@@ -24,9 +24,6 @@ var js_data = <?= json_encode($js_data) ?>
 <script src="<?= $BASE . "/assets/graph.js" ?>"></script>
 
 
-<?php
-if(!empty($archives_info)) {
-	?>
 	<table class="table table-bordered my-3">
 		<tr>
 			<th>name</th>
@@ -41,9 +38,9 @@ if(!empty($archives_info)) {
 			$dt = $repo_list->get_archive_date($archive_name);
 			$start = $dt->format("d/m/Y H:i:s");
 			
-			$archive_info = $archives_info [$archive_name];
 			$archive_url = $BASE . $f3->alias("archive", ["repo_type" => $repo_type, "user_name" => $user_name, "repo_name" => $repo_name, "archive_name" => $archive_name], []);
-			if(!empty($archive_info)) {
+			if(!empty($archives_info [$archive_name])) {
+				$archive_info = $archives_info [$archive_name];
 				$archive_info = $archive_info ["archives"] [0];
 				date_default_timezone_set('UTC');
 				$duration = date('H:i:s', round($archive_info ["duration"]));
@@ -71,9 +68,6 @@ if(!empty($archives_info)) {
 		}
 		?>
 	</table>
-	<?php
-}
-?>
 
 	</main>
 
