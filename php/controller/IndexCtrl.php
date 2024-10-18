@@ -2,7 +2,7 @@
 namespace controller;
 
 use Base;
-
+use ErrorException;
 
 class IndexCtrl
 {
@@ -34,6 +34,17 @@ class IndexCtrl
 	{
 		
 		die;
+	}
+	
+	
+	public static function faviconGET (\Base $f3, array $url, string $controler)
+	{
+		$web = \Web::instance();
+		$filename = __DIR__ . "/../../assets/app_icon.svg";
+		$sent = $web->send($filename);
+		if ($sent === false) {
+			throw new ErrorException("web send error");
+		}
 	}
 	
 }
