@@ -2,7 +2,6 @@
 use model\DuplicatiRepositoryListMdl;
 use service\Stuff;
 
-
 require_once __DIR__.'/layout/head.phtml';
 ?>
 
@@ -79,8 +78,8 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 		
 		// to make a link to the repo on this server
 		$local_server_name = Stuff::get_local_server_name();
-		// $local_server = $servers [$local_server_name];
-		$repo = $data_borg [$local_server_name] [$user_name] [$repo_name]; 
+		$local_server = $servers [$local_server_name];
+		$local_server_url = rtrim($local_server ["url"], "/");
 		?>
 			<td title="<?= $repo_name ?>">
 				<?= $repo_label ?>
@@ -112,7 +111,7 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 						total size : <?= stuff::float_formater(Stuff::convert_size($repo_size)) ?> <br/> 
 						# archives : <?= $archive_count ?> <br/>
 						last archive size : <?= stuff::float_formater(Stuff::convert_size($original_size)) ?>">
-						<a href="<?= $server_url . $f3->alias("repository", ["repo_type" => "borg", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
+						<a href="<?= $local_server_url . $f3->alias("repository", ["server_name" => $server_name, "repo_type" => "borg", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
 							class="d-block w-100 h-100 text-decoration-none text-dark" target="_self">
 							<?= $last_archive_dt->format("d/m H:i") ?>
 						</a>

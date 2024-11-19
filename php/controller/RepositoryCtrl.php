@@ -14,19 +14,19 @@ use service\Stuff;
 class RepositoryCtrl
 {
 
-	public static function beforeRoute (Base $f3) : void
+	public static function beforeRoute (Base $f3, array $url, string $controler) : void
 	{
 		
 	}
     
 	
-	public static function afterRoute (Base $f3) : void
+	public static function afterRoute (Base $f3, array $url, string $controler) : void
 	{
 		
 	}
 
 	
-	public static function listGET (Base $f3) : void
+	public static function listGET (Base $f3, array $url, string $controler) : void
 	{
 		// get conf
 		$servers = $f3->get("conf.servers");
@@ -113,11 +113,14 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function viewGET (Base $f3) : void
+	public static function viewGET (Base $f3, array $url, string $controler) : void
 	{
 		// params
 		$repo_type = $f3->get("PARAMS.repo_type");
 		$f3->set("repo_type", $repo_type);
+		
+		$server_name = $f3->get("PARAMS.server_name");
+		$f3->set("server_name", $server_name);
 		
 		$user_name = $f3->get("PARAMS.user_name");
 		$f3->set("user_name", $user_name);
@@ -127,20 +130,20 @@ class RepositoryCtrl
 		$f3->set("repo_name", $repo_name);
 		
 		// get data
+		$servers = $f3->get("conf.servers");
 		$repo = $f3->get("conf.repos.$repo_type.$user_name.$repo_name");
 		$repo_label = $repo ["label"];
 		$f3->set("repo_label", $repo_label);
-		$repo_passphrase = $repo ["passphrase"];
+		$repo_passphrase = $repo ["passphrase"]; //TODO use !
 		
-		$local_server_name = Stuff::get_local_server_name();
 		if($repo_type === "borg") {
-			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
 			
 			$repo_list = new BorgRepositoryListMdl($repo_info);
 			$f3->set("repo_list", $repo_list);
 		}
 		elseif($repo_type === "duplicati") {
-			$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $local_server_name);
+			$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $server_name);
 			
 			$repo_list = new DuplicatiRepositoryListMdl($repo_info);
 			$f3->set("repo_list", $repo_list);
@@ -170,6 +173,8 @@ class RepositoryCtrl
 		$f3->set("js_data", $js_data);
 		$f3->set("archives_info", $archives_info);
 		
+		$server = $servers [$server_name];
+		
 		$page ["title"] = "archives ( ".count($archives_names) ." )";
 		$page ["breadcrumbs"] = [
 			[
@@ -182,6 +187,10 @@ class RepositoryCtrl
 			],
 			[
 				"label"	=> $repo_type,
+				"url"	=> null,
+			],
+			[
+				"label"	=> $server ["label"],
 				"url"	=> null,
 			],
 			[
@@ -200,7 +209,7 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function archiveGET (Base $f3) : void
+	public static function archiveGET (Base $f3, array $url, string $controler) : void
 	{
 		// params
 		$repo_type = $f3->get("PARAMS.repo_type");
@@ -234,7 +243,7 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cacheUpdateRepoGET (Base $f3) : void
+	public static function cacheUpdateRepoGET (Base $f3, array $url, string $controler) : void
 	{
 		// params
 		$force_archive_infos = $f3->get("GET.force_archive_infos");
@@ -307,7 +316,7 @@ class RepositoryCtrl
 	}
 	
 	
-	public static function cachePushPOST (Base $f3) : void
+	public static function cachePushPOST (Base $f3, array $url, string $controler) : void
 	{
 		// params & data
 		$repo_type = $f3->get("PARAMS.repo_type");
@@ -349,6 +358,40 @@ class RepositoryCtrl
 		else {
 			throw new ErrorException("unknown repo type");
 		}
+	}
+	
+	
+	public static function cacheClearGET (Base $f3, array $url, string $controler) : void
+	{
+		// params
+		$repo_type = $f3->get("PARAMS.repo_type");
+		$server_name = $f3->get("PARAMS.server_name");
+		$user_name = $f3->get("PARAMS.user_name");
+		$repo_name = $f3->get("PARAMS.repo_name");
+		
+		if ($repo_type === "borg") {
+			$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
+			$repo_list = new BorgRepositoryListMdl($repo_info);
+			
+			$archives_name = $repo_list->get_archives_names();
+			foreach ($archives_name as $archive_name) {
+				$repo_archive = new BorgArchiveInfoMdl($repo_info, $archive_name);
+				$repo_archive->removeFromCache();
+			}
+			
+			$repo_list->removeFromCache();
+			$repo_info->removeFromCache();
+		}
+		elseif ($repo_type === "duplicati") {
+			$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $server_name);
+			
+		}
+		else {
+			throw new ErrorException("invalid repo type");
+		}
+		
+		
+		$f3->reroute(["repository", ["repo_type" => $repo_type, "user_name" => $user_name, "repo_name" => $repo_name], []]);
 	}
 	
 }

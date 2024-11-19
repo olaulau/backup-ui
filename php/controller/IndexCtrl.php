@@ -7,19 +7,19 @@ use ErrorException;
 class IndexCtrl
 {
 
-	public static function beforeRoute (Base $f3) : void
+	public static function beforeRoute (Base $f3, array $url, string $controler) : void
 	{
 		
 	}
     
 	
-	public static function afterRoute (Base $f3) : void
+	public static function afterRoute (Base $f3, array $url, string $controler) : void
 	{
 		
 	}
 
 	
-	public static function indexGET (Base $f3) : void
+	public static function indexGET (Base $f3, array $url, string $controler) : void
 	{
 		$page ["title"] = $f3->get("conf.hostname_override") ?? $f3->get("HOST");
 		$page ["breadcrumbs"] = [];
@@ -30,14 +30,14 @@ class IndexCtrl
 	}
 	
 	
-	public static function testGET (Base $f3) : void
+	public static function testGET (Base $f3, array $url, string $controler) : void
 	{
 		
 		die;
 	}
 	
 	
-	public static function faviconGET (\Base $f3, array $url, string $controler)
+	public static function faviconGET (Base $f3, array $url, string $controler)
 	{
 		$web = \Web::instance();
 		$filename = __DIR__ . "/../../assets/app_icon.svg";

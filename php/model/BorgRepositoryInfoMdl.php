@@ -13,7 +13,7 @@ class BorgRepositoryInfoMdl extends AbstractCachedValueMdl
 	private string $repo_name;
 	
 	
-	public function __construct (string $user_name, string $repo_name, string $server_name)
+	public function __construct (string $user_name, string $repo_name, string $server_name) //TODO put server_name first
 	{
 		$this->server_name = $server_name;
 		$this->user_name = $user_name;
