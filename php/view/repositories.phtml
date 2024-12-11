@@ -239,7 +239,7 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 						data-bs-toggle="popover" data-bs-trigger="hover" data-bs-title="repo infos" data-bs-html="true". data-bs-content="
 						total size : <?= stuff::float_formater(Stuff::convert_size($repo_info)) ?> <br/> 
 						# archives : <?= count($repo_list) ?>">
-						<a href="<?= $server_url . $f3->alias("repository", ["repo_type" => "duplicati", "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
+						<a href="<?= $server_url . $f3->alias("repository", ["repo_type" => "duplicati","server_name" => $server_name, "user_name" => $user_name, "repo_name" => $repo_name], []) ?>"
 							class="d-block w-100 h-100 text-decoration-none text-dark" target="_self">
 							<?= $last_archive_dt->format("d/m H:i") ?>
 						</a>
