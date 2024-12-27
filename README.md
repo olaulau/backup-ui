@@ -11,6 +11,7 @@ display backups informations (borg & duplicati) so that you can easilly check yo
 	- list repos and their details
 	- list archives and their details
 	- access raw archive informations
+	- optional custom repo directory
 - duplicati
 	- repo disk usage size
 	- list archives (date)
@@ -26,7 +27,7 @@ display backups informations (borg & duplicati) so that you can easilly check yo
 - (recommended) borgmatic on the client, if you use borg_client script
 - duplicati-cli on the server
 - webserver (recommended Apache >= 2.4)
-- PHP (>= 7.4), php-curl, composer
+- PHP (>= 7.4), php-curl, pbp-bcmath, composer
 - npm
 
 ## compatibility
@@ -36,12 +37,16 @@ display backups informations (borg & duplicati) so that you can easilly check yo
 	- download composer.phar from their website (use ```php8.0 composer.phar install```)
 	- you may have to go ssh root to handle repo permissions correctly
 
-
 ## create a user (on the server)
 ```
 adduser <user>
 adduser www-data <user>
 systemctl restart apache2
+```
+web server must have read/write rights to repo directory, so you must handle group carefully :
+```
+adduser www-data <user>
+chmod -R 2770 <repo>
 ```
 
 ## web ui
@@ -53,7 +58,8 @@ npm i
 
 ## configure
 ```
-cd backup
+cd backup-ui
+cp conf/conf.dist.ini conf/conf.ini
 vim conf/conf.ini
 	fill-in values
 ```
@@ -105,7 +111,10 @@ either :
 - refresh of cache is push by the client script
 
 ## data structure
-server > user > type > repo > archive
+server > user > type > repo > archive  
+if no custom directory is provided, repositories are in thoses paths :  
+```/<home_prefix>/<user>/<type>/<repo>```  
+
 
 ## library used
 - [fat free framework](https://fatfreeframework.com/3.8/home) : PHP framework
