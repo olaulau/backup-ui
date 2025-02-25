@@ -39,58 +39,68 @@ class RepositoryCtrl
 		$f3->set("repos_duplicati", $repos_duplicati);
 		
 		$data_borg = [];
-		foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
-			foreach ($repos_borg as $user_name => $user_repos) {
-				foreach ($user_repos as $repo_name => list("label" => $repo_label, "passphrase" => $repo_passphrase, "dir" => $repo_dir)) {
-					$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
-					$repo_info_value = $repo_info->getValueFromCache();
-					$data_borg [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
-					
-					$repo_list = new BorgRepositoryListMdl($repo_info);
-					$repo_list_value = $repo_list->getValueFromCache();
-					$data_borg [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
-					
-					if(!empty($repo_list_value)) {
-						$archives = $repo_list_value ["archives"];
-						$last_archive = $archives[array_key_last($archives)];
-						$last_archive_name = $last_archive ["name"];
-						$last_archive = (new BorgArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+		if(!empty($servers)) {
+			foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
+				if(!empty($repos_borg)) {
+					foreach ($repos_borg as $user_name => $user_repos) {
+						if(!empty($user_repos)) {
+							foreach ($user_repos as $repo_name => list("label" => $repo_label, "passphrase" => $repo_passphrase, "dir" => $repo_dir)) {
+								$repo_info = new BorgRepositoryInfoMdl($user_name, $repo_name, $server_name);
+								$repo_info_value = $repo_info->getValueFromCache();
+								$data_borg [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
+								
+								$repo_list = new BorgRepositoryListMdl($repo_info);
+								$repo_list_value = $repo_list->getValueFromCache();
+								$data_borg [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
+								
+								if(!empty($repo_list_value)) {
+									$archives = $repo_list_value ["archives"];
+									$last_archive = $archives[array_key_last($archives)];
+									$last_archive_name = $last_archive ["name"];
+									$last_archive = (new BorgArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+								}
+								else {
+									$last_archive = null;
+								}
+								$data_borg [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
+							}
+						}
 					}
-					else {
-						$last_archive = null;
-					}
-					$data_borg [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
 				}
 			}
 		}
 		$f3->set("data_borg", $data_borg);
 		
 		$data_duplicati = [];
-		if(!empty($repos_duplicati)) {
+		if(!empty($servers)) {
 			foreach($servers as $server_name => list("label" => $server_label, "url" => $server_url)) {
+				if(!empty($repos_duplicati)) {
 				foreach ($repos_duplicati as $user_name => $user) {
-					foreach ($user as $repo_name => $repo) {
-						$repo_label = $repo ["label"];
-						$repo_passphrase = $repo ["passphrase"];
-						
-						$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $server_name);
-						$repo_info_value = $repo_info->getValueFromCache();
-						$data_duplicati [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
-						
-						$repo_list = new DuplicatiRepositoryListMdl($repo_info);
-						$repo_list_value = $repo_list->getValueFromCache();
-						$data_duplicati [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
-						
-						// if(!empty($repo_list_value)) {
-						// 	$archives = $repo_list_value ["archives"];
-						// 	$last_archive = $archives[array_key_last($archives)];
-						// 	$last_archive_name = $last_archive ["name"];
-						// 	$last_archive = (new DuplicatiArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
-						// }
-						// else {
-						// 	$last_archive = null;
-						// }
-						// $data_duplicati [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
+					if(!empty($user)) {
+						foreach ($user as $repo_name => $repo) {
+							$repo_label = $repo ["label"];
+							$repo_passphrase = $repo ["passphrase"];
+							
+							$repo_info = new DuplicatiRepositoryInfoMdl($user_name, $repo_name, $server_name);
+							$repo_info_value = $repo_info->getValueFromCache();
+							$data_duplicati [$server_name] [$user_name] [$repo_name] ["info"] = $repo_info_value;
+							
+							$repo_list = new DuplicatiRepositoryListMdl($repo_info);
+							$repo_list_value = $repo_list->getValueFromCache();
+							$data_duplicati [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
+							
+							// if(!empty($repo_list_value)) {
+							// 	$archives = $repo_list_value ["archives"];
+							// 	$last_archive = $archives[array_key_last($archives)];
+							// 	$last_archive_name = $last_archive ["name"];
+							// 	$last_archive = (new DuplicatiArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+							// }
+							// else {
+							// 	$last_archive = null;
+							// }
+							// $data_duplicati [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
+						}
+					}
 					}
 				}
 			}

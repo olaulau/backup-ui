@@ -34,18 +34,20 @@ require_once __DIR__.'/layout/header.phtml';
 			<?php
 			$total ["user_count"] = 0;
 			$total ["repo_count"] = 0;
-			foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
-				$total [$server_name] ["repo_size"] = 0;
-				$total [$server_name] ["archive_count"] = 0;
-				$total [$server_name] ["last_archive_datetime"] = "9999";
-				$total [$server_name] ["last_archive_original_size"] = 0;
-				?>
-				<th colspan="1" class="text-center align-middle" title="<?= $server_name ?>">
-					<a class="<?= $server_remote === false ? " pe-none text-decoration-none text-dark" : "d-block w-100 h-100" ?>" href="<?= $server_url ?>repositories" target="_self">
-						<?= $server_label ?>
-					</a>
-				</th>
-				<?php
+			if(!empty($servers)) {
+				foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
+					$total [$server_name] ["repo_size"] = 0;
+					$total [$server_name] ["archive_count"] = 0;
+					$total [$server_name] ["last_archive_datetime"] = "9999";
+					$total [$server_name] ["last_archive_original_size"] = 0;
+					?>
+					<th colspan="1" class="text-center align-middle" title="<?= $server_name ?>">
+						<a class="<?= $server_remote === false ? " pe-none text-decoration-none text-dark" : "d-block w-100 h-100" ?>" href="<?= $server_url ?>repositories" target="_self">
+							<?= $server_label ?>
+						</a>
+					</th>
+					<?php
+				}
 			}
 			?>
 			</tr>
@@ -54,10 +56,12 @@ require_once __DIR__.'/layout/header.phtml';
 				<th class="text-center">user</th>
 				<th class="text-center">repo</th>
 			<?php
-			foreach (array_keys($servers) as $server_name) {
-				?>
-				<th class="text-center">last archive </th>
-				<?php
+			if(!empty($servers)) {
+				foreach (array_keys($servers) as $server_name) {
+					?>
+					<th class="text-center">last archive </th>
+					<?php
+				}
 			}
 			?>
 			</tr>
@@ -141,15 +145,17 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 				<th class="text-end"> <?= $total ["user_count"] ?></th>
 				<th class="text-end"> <?= $total ["repo_count"] ?></th>
 				<?php
-				foreach (array_keys($servers) as $server_name) {
-					?>
-					<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
-					<!-- <th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th> -->
-					<!-- <th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
-						<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
-					</th> -->
-					<!-- <th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th> -->
-					<?php
+				if(!empty($servers)) {
+					foreach (array_keys($servers) as $server_name) {
+						?>
+						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
+						<!-- <th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th> -->
+						<!-- <th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
+							<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
+						</th> -->
+						<!-- <th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th> -->
+						<?php
+					}
 				}
 				?>
 			</tr>
@@ -170,18 +176,20 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 			<?php
 			$total ["user_count"] = 0;
 			$total ["repo_count"] = 0;
-			foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
-				$total [$server_name] ["repo_size"] = 0;
-				$total [$server_name] ["archive_count"] = 0;
-				$total [$server_name] ["last_archive_datetime"] = "9999";
-				$total [$server_name] ["last_archive_original_size"] = 0;
-				?>
-				<th colspan="1" class="text-center align-middle" title="<?= $server_name ?>">
-					<a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "d-block w-100 h-100" ?>" href="<?= $server_url ?>repositories" target="_self">
-						<?= $server_label ?>
-					</a>
-				</th>
-				<?php
+			if(!empty($servers)) {
+				foreach ($servers as $server_name => list("label" => $server_label, "url" => $server_url, "remote" => $server_remote)) {
+					$total [$server_name] ["repo_size"] = 0;
+					$total [$server_name] ["archive_count"] = 0;
+					$total [$server_name] ["last_archive_datetime"] = "9999";
+					$total [$server_name] ["last_archive_original_size"] = 0;
+					?>
+					<th colspan="1" class="text-center align-middle" title="<?= $server_name ?>">
+						<a class="<?= $server_remote === false ? "pe-none text-decoration-none text-dark" : "d-block w-100 h-100" ?>" href="<?= $server_url ?>repositories" target="_self">
+							<?= $server_label ?>
+						</a>
+					</th>
+					<?php
+				}
 			}
 			?>
 			</tr>
@@ -190,10 +198,12 @@ foreach ($repos_borg ?? [] as $user_name => $user) {
 				<th class="text-center">user</th>
 				<th class="text-center">repo</th>
 			<?php
-			foreach (array_keys($servers) as $server_name) {
-				?>
-				<th class="text-center">last archive </th>
-				<?php
+			if(!empty($servers)) {
+				foreach (array_keys($servers) as $server_name) {
+					?>
+					<th class="text-center">last archive </th>
+					<?php
+				}
 			}
 			?>
 			</tr>
@@ -266,15 +276,17 @@ foreach ($repos_duplicati ?? [] as $user_name => $user) {
 					<th class="text-end"> <?= $total ["user_count"] ?></th>
 					<th class="text-end"> <?= $total ["repo_count"] ?></th>
 					<?php
-					foreach (array_keys($servers) as $server_name) {
-						?>
-						<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
-						<!-- <th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th> -->
-						<!-- <th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
-							<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
-						</th> -->
-						<!-- <th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th> -->
-						<?php
+					if(!empty($servers)) {
+						foreach (array_keys($servers) as $server_name) {
+							?>
+							<th class="text-end"><?= stuff::float_formater(Stuff::convert_size($total [$server_name] ["repo_size"])) ?></th>
+							<!-- <th class="text-end"><?= $total [$server_name] ["archive_count"] ?></th> -->
+							<!-- <th class="text-end" title="<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m/Y H:i:s") : "" ?>">
+								<?= ($total [$server_name] ["last_archive_datetime"] !== "9999") ? (new DateTime($total [$server_name] ["last_archive_datetime"]))->format("d/m H:i") : "" ?>
+							</th> -->
+							<!-- <th class="text-end"><?= Stuff::float_formater(Stuff::convert_size($total [$server_name] ["last_archive_original_size"])) ?></th> -->
+							<?php
+						}
 					}
 					?>
 				</tr>
