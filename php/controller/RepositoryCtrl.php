@@ -53,14 +53,14 @@ class RepositoryCtrl
 								$repo_list_value = $repo_list->getValueFromCache();
 								$data_borg [$server_name] [$user_name] [$repo_name] ["list"] = $repo_list_value;
 								
+								$last_archive = null;
 								if(!empty($repo_list_value)) {
 									$archives = $repo_list_value ["archives"];
-									$last_archive = $archives[array_key_last($archives)];
-									$last_archive_name = $last_archive ["name"];
-									$last_archive = (new BorgArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
-								}
-								else {
-									$last_archive = null;
+									if(!empty($archives)) {
+										$last_archive = $archives[array_key_last($archives)];
+										$last_archive_name = $last_archive ["name"];
+										$last_archive = (new BorgArchiveInfoMdl($repo_info, $last_archive_name))->getValueFromCache();
+									}
 								}
 								$data_borg [$server_name] [$user_name] [$repo_name] ["last_archive"] = $last_archive;
 							}
