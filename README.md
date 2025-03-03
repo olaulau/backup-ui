@@ -87,6 +87,7 @@ rm borg_client.sh
 wget https://raw.githubusercontent.com/olaulau/borg-ui/main/script/borg_client.sh
 chmod u+x borg_client.sh
 crontab -e
+	@reboot rm -f /root/bin/borgmatic.lock
 	0	*	*	*	*	. /etc/profile; . $HOME/.profile; cd bin; ./borg_client.sh <server> <user_name> <repo_name> >> borg_client.log 2>&1
 ```
 
