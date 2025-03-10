@@ -25,9 +25,9 @@ display backups informations (borg & duplicati) so that you can easilly check yo
 - git
 - borg (recent versions), on both client and server
 - (recommended) borgmatic on the client, if you use borg_client script
-- duplicati-cli on the server
+- [duplicati-cli](https://prev-docs.duplicati.com/en/latest/02-installation/) on the server
 - webserver (recommended Apache >= 2.4)
-- PHP (>= 7.4), php-curl, pbp-bcmath, composer
+- PHP (>= 7.4), php-curl, php-bcmath, composer
 - npm
 
 ## compatibility
@@ -52,13 +52,13 @@ chmod -R 2770 <repo>
 ## web ui
 ```
 git clone https://github.com/olaulau/backup-ui
+cd backup-ui
 composer i
 npm i
 ```
 
 ## configure
 ```
-cd backup-ui
 cp conf/conf.dist.ini conf/conf.ini
 vim conf/conf.ini
 	fill-in values

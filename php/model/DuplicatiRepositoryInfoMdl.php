@@ -1,6 +1,7 @@
 <?php
 namespace model;
 
+use Base;
 use ErrorException;
 use service\Stuff;
 
@@ -11,6 +12,7 @@ class DuplicatiRepositoryInfoMdl extends AbstractCachedValueMdl
 	private string $server_name;
 	private string $user_name;
 	private string $repo_name;
+	private string $location;
 	
 	
 	public function __construct (string $user_name, string $repo_name, string $server_name)
@@ -18,6 +20,10 @@ class DuplicatiRepositoryInfoMdl extends AbstractCachedValueMdl
 		$this->server_name = $server_name;
 		$this->user_name = $user_name;
 		$this->repo_name = $repo_name;
+		
+		$f3 = Base::instance();
+		$repo_dir = $f3->get("conf.repos.duplicati.$user_name.$repo_name.dir");
+		$this->location = $repo_dir ?? "";
 	}
 	
 	
@@ -39,10 +45,15 @@ class DuplicatiRepositoryInfoMdl extends AbstractCachedValueMdl
 	
 	public function getLocation () : string
 	{
-		$f3 = \Base::instance();
-
-		$home_prefix = $f3->get("conf.home_prefix");
-		return $location = "$home_prefix/$this->user_name/duplicati/$this->repo_name/";
+		if(!empty($this->location)) {
+			return $this->location;
+		}
+		else {
+			$f3 = \Base::instance();
+			$home_prefix = $f3->get("conf.home_prefix");
+			$location = "$home_prefix/$this->user_name/duplicati/$this->repo_name/";
+			return $location;
+		}
 	}
 	
 	

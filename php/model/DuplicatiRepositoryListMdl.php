@@ -45,7 +45,7 @@ class DuplicatiRepositoryListMdl extends AbstractCachedValueMdl
 			throw new ErrorException("can't get repo infos for remote repo");
 		}
 		
-		$repo_path = "/home/{$this->getRepoInfo()->getUserName()}/duplicati/{$this->getRepoInfo()->getRepoName()}/";
+		$repo_path = $this->getRepoInfo()->getLocation();
 		$cmd = "PASSPHRASE={$this->getRepoInfo()->get_passphrase()} duplicati-cli find {$repo_path} --auto-update=false --all-versions=true --debug-output=true --full-result=true --console-log-level=Information";
 		exec($cmd, $output, $result_code);
 		if($result_code !== 0) {
