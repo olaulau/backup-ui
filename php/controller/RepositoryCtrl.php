@@ -2,6 +2,7 @@
 namespace controller;
 
 use Base;
+use DateTimeImmutable;
 use ErrorException;
 use model\BorgArchiveInfoMdl;
 use model\BorgRepositoryInfoMdl;
@@ -165,6 +166,7 @@ class RepositoryCtrl
 		$f3->set("archives_names", $archives_names);
 		
 		// prepare data
+		$now = new DateTimeImmutable();
 		$js_data = [];
 		$archives_info = [];
 		foreach ($archives_names as $archive_name) {
@@ -172,7 +174,10 @@ class RepositoryCtrl
 			if(empty($dt)) {
 				throw new ErrorException("empty datetime");
 			}
-			$js_data [] = $dt->getTimestamp();
+			$diff = $dt->diff($now);
+			if ($diff->days >= 1) { // ln graph starts at 1 day ago
+				$js_data [] = $dt->getTimestamp();
+			}
 			
 			if($repo_type === "borg") {
 				$archive_info = new BorgArchiveInfoMdl($repo_info, $archive_name);

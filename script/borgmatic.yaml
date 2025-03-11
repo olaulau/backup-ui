@@ -10,8 +10,7 @@ relocated_repo_access_is_ok: true
 unknown_unencrypted_repo_access_is_ok: true
 check_i_know_what_i_am_doing: true
 
-keep_within: 24H
-keep_hourly: 24
+keep_within: 48H
 keep_daily: 5
 keep_weekly: 4
 keep_monthly: 11
