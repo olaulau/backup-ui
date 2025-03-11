@@ -3,6 +3,7 @@ namespace model;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use ErrorException;
 
 
@@ -97,7 +98,10 @@ class BorgRepositoryListMdl extends AbstractCachedValueMdl implements Repository
 		if(empty($dt_str)) {
 			return null;
 		}
-		return new DateTimeImmutable($dt_str);
+		
+		$dtz = new DateTimeZone("Europe/Paris");
+		$dt = new DateTimeImmutable($dt_str, $dtz);
+		return $dt;
 	}
 	
 }

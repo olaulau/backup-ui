@@ -3,6 +3,7 @@ namespace controller;
 
 use Base;
 use DateTimeImmutable;
+use DateTimeZone;
 use ErrorException;
 use model\BorgArchiveInfoMdl;
 use model\BorgRepositoryInfoMdl;
@@ -166,7 +167,8 @@ class RepositoryCtrl
 		$f3->set("archives_names", $archives_names);
 		
 		// prepare data
-		$now = new DateTimeImmutable();
+		$dtz = new DateTimeZone("Europe/Paris");
+		$now = new DateTimeImmutable("now", $dtz);
 		$js_data = [];
 		$archives_info = [];
 		foreach ($archives_names as $archive_name) {

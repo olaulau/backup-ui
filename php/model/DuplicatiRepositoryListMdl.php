@@ -3,6 +3,7 @@ namespace model;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use ErrorException;
 use service\Stuff;
 
@@ -112,7 +113,9 @@ class DuplicatiRepositoryListMdl extends AbstractCachedValueMdl
 		if(empty($dt_str)) {
 			return null;
 		}
-		$dt = DateTimeImmutable::createFromFormat(self::date_time_format, $dt_str);
+		
+		$dtz = new DateTimeZone("Europe/Paris");
+		$dt = DateTimeImmutable::createFromFormat(self::date_time_format, $dt_str, $dtz);
 		return $dt;
 	}
 	

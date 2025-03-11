@@ -5,6 +5,7 @@ use Base;
 use ByteUnits\Binary;
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use ErrorException;
 
 
@@ -25,7 +26,7 @@ class Stuff
 	}
 	
 	
-	public static function get_local_server_name () : string
+	public static function get_local_server_name () : ?string
 	{
 		$f3 = Base::instance();
 		$servers = $f3->get("conf.servers");
@@ -43,7 +44,8 @@ class Stuff
 		$f3 = Base::instance();
 		
 		// calculate delay
-		$now = new DateTimeImmutable();
+		$dtz = new DateTimeZone("Europe/Paris");
+		$now = new DateTimeImmutable("now", $dtz);
 		$di = $dt->diff($now);
 		$delay_days = $di->days;
 		if($delay_days < 0) {
